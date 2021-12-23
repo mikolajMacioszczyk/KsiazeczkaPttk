@@ -8,13 +8,26 @@ using System.Threading.Tasks;
 
 namespace KsiazeczkaPttk.DAL.Repositories
 {
-    public class PotwierdzenieRepository : IPotwierdzenieRepository
+    public class WycieczkaRepository : IWycieczkaRepository
     {
         private readonly KsiazeczkaContext _context;
 
-        public PotwierdzenieRepository(KsiazeczkaContext context)
+        public WycieczkaRepository(KsiazeczkaContext context)
         {
             _context = context;
+        }
+
+        public async Task<Wycieczka> GetById(int id)
+        {
+            return await _context.Wycieczki
+                .Include(w => w.Status)
+                .Include(w => w.Uzytkownik)
+                .FirstOrDefaultAsync(w => w.Id == id);
+        }
+
+        public async Task<PrzebycieOdcinka> GetPrzebytyOdcinekById(int id)
+        {
+            return await _context.PrzebyteOdcinki.FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task<IEnumerable<PotwierdzenieTerenowePrzebytegoOdcinka>> GetPotwierdzeniaForOdcinek(PrzebycieOdcinka odcinek)
@@ -30,26 +43,25 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<bool> DeletePotwierdzenia(int id)
+        public async Task<Wycieczka> CreateWycieczka(Wycieczka wycieczka)
         {
-            var potwierdzenie = await _context.PotwierdzeniaTerenowe.FirstOrDefaultAsync(p => p.Id == id);
-            if (potwierdzenie is null)
+            var status = _context.StatusyWycieczek.FirstOrDefaultAsync(s => s.Status == wycieczka.Status);
+            var wlascicel = _context.Uzytkownicy.FirstOrDefaultAsync(u => u.Login == wycieczka.Wlasciciel);
+
+            if (status is null || wlascicel is null)
             {
-                return false;
+                return null;
             }
 
-            var potwierdzeniaOdcinkow = await _context.PotwierdzeniaTerenowePrzebytychOdcinkow
-                .Where(p => p.Potwierdzenie == id).ToListAsync();
-
-            foreach (var potwierdzenieOdcinka in potwierdzeniaOdcinkow)
-            {
-                _context.PotwierdzeniaTerenowePrzebytychOdcinkow.Remove(potwierdzenieOdcinka);
-            }
+            await _context.Wycieczki.AddAsync(wycieczka);
             await _context.SaveChangesAsync();
 
-            _context.PotwierdzeniaTerenowe.Remove(potwierdzenie);
-            await _context.SaveChangesAsync();
-            return true;
+            return wycieczka;
+        }
+
+        public Task<Odcinek> CreateOdcinekPrywatny(Odcinek odcinek)
+        {
+            throw new System.NotImplementedException();
         }
 
         public async Task<PotwierdzenieTerenowe> AddPotwierdzenieToOdcinekWithOr(PotwierdzenieTerenowe potwierdzenie, int odcinekId)
@@ -94,6 +106,28 @@ namespace KsiazeczkaPttk.DAL.Repositories
             };
             await _context.PotwierdzeniaTerenowePrzebytychOdcinkow.AddAsync(potwierdzeniePrzebytego);
             return potwierdzenie;
+        }
+
+        public async Task<bool> DeletePotwierdzenia(int id)
+        {
+            var potwierdzenie = await _context.PotwierdzeniaTerenowe.FirstOrDefaultAsync(p => p.Id == id);
+            if (potwierdzenie is null)
+            {
+                return false;
+            }
+
+            var potwierdzeniaOdcinkow = await _context.PotwierdzeniaTerenowePrzebytychOdcinkow
+                .Where(p => p.Potwierdzenie == id).ToListAsync();
+
+            foreach (var potwierdzenieOdcinka in potwierdzeniaOdcinkow)
+            {
+                _context.PotwierdzeniaTerenowePrzebytychOdcinkow.Remove(potwierdzenieOdcinka);
+            }
+            await _context.SaveChangesAsync();
+
+            _context.PotwierdzeniaTerenowe.Remove(potwierdzenie);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

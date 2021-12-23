@@ -1,8 +1,7 @@
-﻿using KsiazeczkaPttk.API.ViewModels;
-using KsiazeczkaPttk.DAL.Interfaces;
+﻿using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace KsiazeczkaPttk.API.Controllers
@@ -11,31 +10,30 @@ namespace KsiazeczkaPttk.API.Controllers
     [Route("[controller]")]
     public class PotwierdzenieController : ControllerBase
     {
-        private readonly IOdcinekRepository _odcinekRepository;
-        private readonly IPotwierdzenieRepository _potwierdzenieRepository;
+        private readonly IWycieczkaRepository _wycieczkaRepository;
 
-        public PotwierdzenieController(IOdcinekRepository odcinekRepository, IPotwierdzenieRepository potwierdzenieRepository)
+        public PotwierdzenieController(IWycieczkaRepository wycieczkaRepository)
         {
-            _odcinekRepository = odcinekRepository;
-            _potwierdzenieRepository = potwierdzenieRepository;
+            _wycieczkaRepository = wycieczkaRepository;
         }
 
         [HttpGet("potwierdzeniaOdcinka/{id}")]
-        public async Task<ActionResult> GetPotwierdzeniaOdcinka(int idOdcinka)
+        public async Task<ActionResult> GetPotwierdzeniaOdcinka([FromRoute] int idOdcinka)
         {
-            var odcinek = await _odcinekRepository.GetPrzebytyOdcinekById(idOdcinka);
+            var odcinek = await _wycieczkaRepository.GetPrzebytyOdcinekById(idOdcinka);
             if (odcinek is null)
             {
                 return NotFound();
             }
 
-            return Ok(await _potwierdzenieRepository.GetPotwierdzeniaForOdcinek(odcinek));
+            return Ok(await _wycieczkaRepository.GetPotwierdzeniaForOdcinek(odcinek));
         }
 
-        [HttpPost("qrCode")]
-        public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinek(PotwierdzenieTerenowe potwierdzenie, int odcinekId)
+        [HttpPost("qrCode/{odcinekId}")]
+        public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithQrCode(
+            [FromRoute] int odcinekId, [FromBody] PotwierdzenieTerenowe potwierdzenie)
         {
-            var result = await _potwierdzenieRepository.AddPotwierdzenieToOdcinek(potwierdzenie, odcinekId);
+            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithOr(potwierdzenie, odcinekId);
             if (result is null)
             {
                 return BadRequest();
@@ -44,10 +42,23 @@ namespace KsiazeczkaPttk.API.Controllers
             return Ok(potwierdzenie);
         }
 
-        [HttpDelete]
-        public async Task<ActionResult> DeletePotwierdzenieOdcinka(int idPotwierdzenia)
+        [HttpPost("photo/{odcinekId}")]
+        public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithPhoto(
+            [FromRoute] int odcinekId, [FromBody] PotwierdzenieTerenowe potwierdzenie, [FromBody] IFormFile photo)
         {
-            if (await _potwierdzenieRepository.DeletePotwierdzenia(idPotwierdzenia))
+            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithPhoto(potwierdzenie, odcinekId, photo);
+            if (result is null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(potwierdzenie);
+        }
+
+        [HttpDelete("{idPotwierdzenia}")]
+        public async Task<ActionResult> DeletePotwierdzenieOdcinka([FromRoute] int idPotwierdzenia)
+        {
+            if (await _wycieczkaRepository.DeletePotwierdzenia(idPotwierdzenia))
             {
                 return Ok();
             }

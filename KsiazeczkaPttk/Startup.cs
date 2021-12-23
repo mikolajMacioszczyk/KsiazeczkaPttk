@@ -1,4 +1,6 @@
 using KsiazeczkaPttk.DAL;
+using KsiazeczkaPttk.DAL.Interfaces;
+using KsiazeczkaPttk.DAL.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +32,9 @@ namespace KsiazeczkaPttk
         {
             services.AddDbContext<KsiazeczkaContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresConnection")));
+
+            services.AddScoped<ITrasyPubliczneRepository, TrasyPubliczneRepository>();
+            services.AddScoped<IWycieczkaRepository, WycieczkaRepository>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
