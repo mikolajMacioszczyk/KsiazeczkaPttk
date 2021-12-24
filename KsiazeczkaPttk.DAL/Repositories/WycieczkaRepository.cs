@@ -2,6 +2,7 @@
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,14 +21,18 @@ namespace KsiazeczkaPttk.DAL.Repositories
         public async Task<Wycieczka> GetById(int id)
         {
             return await _context.Wycieczki
-                .Include(w => w.Status)
+                .Include(w => w.StatusWycieczki)
                 .Include(w => w.Uzytkownik)
+                .ThenInclude(u => u.RolaUzytkownika)
                 .FirstOrDefaultAsync(w => w.Id == id);
         }
 
         public async Task<PrzebycieOdcinka> GetPrzebytyOdcinekById(int id)
         {
-            return await _context.PrzebyteOdcinki.FirstOrDefaultAsync(o => o.Id == id);
+            return await _context.PrzebyteOdcinki
+                .Include(p => p.DotyczacaWycieczka)
+                .Include(p => p.Odcinek)
+                .FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task<IEnumerable<PotwierdzenieTerenowePrzebytegoOdcinka>> GetPotwierdzeniaForOdcinek(PrzebycieOdcinka odcinek)
@@ -43,15 +48,27 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Wycieczka> CreateWycieczka(Wycieczka wycieczka)
+        public async Task<Wycieczka> CreateWycieczka(string uzytkownik)
         {
-            var status = _context.StatusyWycieczek.FirstOrDefaultAsync(s => s.Status == wycieczka.Status);
-            var wlascicel = _context.Uzytkownicy.FirstOrDefaultAsync(u => u.Login == wycieczka.Wlasciciel);
+            var wlascicel = await _context.Uzytkownicy.FirstOrDefaultAsync(u => u.Login == uzytkownik);
 
-            if (status is null || wlascicel is null)
+            if (wlascicel is null)
             {
                 return null;
             }
+
+            var status = await _context.StatusyWycieczek.FirstOrDefaultAsync(s => s.Status == "Planowana");
+
+            var wycieczka = new Wycieczka
+            {
+                Wlasciciel = uzytkownik,
+                Uzytkownik = wlascicel,
+                Status = status.Status,
+                StatusWycieczki = status
+            };
+
+            // use identity
+            wycieczka.Id = new Random().Next();
 
             await _context.Wycieczki.AddAsync(wycieczka);
             await _context.SaveChangesAsync();
@@ -71,12 +88,19 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             if (odcinekFromDb is null || punktTerenowy is null)
             {
+                // error codes
                 return null;
             }
 
-            // todo: Check if url is ok
+            var potwierdzenieAdministracyjne = await _context.PotwierdzeniaTerenowe
+                .FirstOrDefaultAsync(p => p.Punkt == punktTerenowy.Id && p.Administracyjny);
 
-            return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
+            if (potwierdzenieAdministracyjne.Url == potwierdzenie.Url)
+            {
+                return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
+            }
+
+            return null;
         }
 
         public async Task<PotwierdzenieTerenowe> AddPotwierdzenieToOdcinekWithPhoto(PotwierdzenieTerenowe potwierdzenie, int odcinekId, IFormFile file)
@@ -89,7 +113,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 return null;
             }
 
-            // save image
+            // where to save image
 
             return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
         }
@@ -128,6 +152,6 @@ namespace KsiazeczkaPttk.DAL.Repositories
             _context.PotwierdzeniaTerenowe.Remove(potwierdzenie);
             await _context.SaveChangesAsync();
             return true;
-        }
+        }       
     }
 }

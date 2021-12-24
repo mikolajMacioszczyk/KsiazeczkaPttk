@@ -13,7 +13,7 @@ namespace KsiazeczkaPttk.DAL.Interfaces
 
         Task<IEnumerable<PotwierdzenieTerenowePrzebytegoOdcinka>> GetPotwierdzeniaForOdcinek(PrzebycieOdcinka odcinek);
 
-        Task<Wycieczka> CreateWycieczka(Wycieczka wycieczka);
+        Task<Wycieczka> CreateWycieczka(string uzytkownik);
 
         Task<Odcinek> CreateOdcinekPrywatny(Odcinek odcinek);
 

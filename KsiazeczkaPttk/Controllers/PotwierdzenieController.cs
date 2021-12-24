@@ -1,4 +1,5 @@
-﻿using KsiazeczkaPttk.DAL.Interfaces;
+﻿using KsiazeczkaPttk.API.ViewModels;
+using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +18,13 @@ namespace KsiazeczkaPttk.API.Controllers
             _wycieczkaRepository = wycieczkaRepository;
         }
 
-        [HttpGet("potwierdzeniaOdcinka/{id}")]
+        [HttpGet("potwierdzeniaOdcinka/{idOdcinka}")]
         public async Task<ActionResult> GetPotwierdzeniaOdcinka([FromRoute] int idOdcinka)
         {
             var odcinek = await _wycieczkaRepository.GetPrzebytyOdcinekById(idOdcinka);
             if (odcinek is null)
             {
-                return NotFound();
+                return NotFound($"Not found Przebyty Odcinek with id {idOdcinka}");
             }
 
             return Ok(await _wycieczkaRepository.GetPotwierdzeniaForOdcinek(odcinek));
@@ -31,9 +32,9 @@ namespace KsiazeczkaPttk.API.Controllers
 
         [HttpPost("qrCode/{odcinekId}")]
         public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithQrCode(
-            [FromRoute] int odcinekId, [FromBody] PotwierdzenieTerenowe potwierdzenie)
+            [FromRoute] int odcinekId, [FromBody] CreatePotwierdzenieTerenoweForOdcinekWithQrViewModel modelPotwierdzenia)
         {
-            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithOr(potwierdzenie, odcinekId);
+            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithOr(nul, odcinekId);
             if (result is null)
             {
                 return BadRequest();
@@ -44,15 +45,15 @@ namespace KsiazeczkaPttk.API.Controllers
 
         [HttpPost("photo/{odcinekId}")]
         public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithPhoto(
-            [FromRoute] int odcinekId, [FromBody] PotwierdzenieTerenowe potwierdzenie, [FromBody] IFormFile photo)
+            [FromRoute] int odcinekId, [FromBody] CreatePotwierdzenieWithImageViewModel model)
         {
-            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithPhoto(potwierdzenie, odcinekId, photo);
+            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithPhoto(model.Potwierdzenie, odcinekId, model.Image);
             if (result is null)
             {
                 return BadRequest();
             }
 
-            return Ok(potwierdzenie);
+            return Ok(result);
         }
 
         [HttpDelete("{idPotwierdzenia}")]

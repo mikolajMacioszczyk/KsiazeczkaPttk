@@ -33,7 +33,6 @@ namespace KsiazeczkaPttk.Domain.Models
         [ForeignKey("Pasmo")]
         public PasmoGorskie PasmoGorskie { get; set; }
 
-        [Required]
         [MaxLength(30)]
         public string Wlasciciel { get; set; }
 

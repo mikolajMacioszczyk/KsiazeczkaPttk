@@ -1,4 +1,5 @@
-﻿using KsiazeczkaPttk.DAL.Interfaces;
+﻿using KsiazeczkaPttk.API.ViewModels;
+using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace KsiazeczkaPttk.API.Controllers
             _trasyPubliczneRepository = trasyPubliczneRepository;
         }
 
-        [HttpGet]
+        [HttpGet("wycieczka")]
         public async Task<ActionResult> GetWycieczka(int id)
         {
             var wycieczka = await _wycieczkaRepository.GetById(id);
@@ -41,7 +42,7 @@ namespace KsiazeczkaPttk.API.Controllers
             var pasma = await _trasyPubliczneRepository.GetAllPasmaGorskieForGrupa(grupaId);
             if (pasma is null)
             {
-                return BadRequest();
+                return NotFound($"Not found Grupa Górska with id {grupaId}");
             }
 
             return Ok(pasma);
@@ -53,7 +54,7 @@ namespace KsiazeczkaPttk.API.Controllers
             var odcinki = await _trasyPubliczneRepository.GetAllOdcinkiForPasmo(pasmoId);
             if (odcinki is null)
             {
-                return BadRequest();
+                return NotFound($"Not found Pasmo Górskie with id {pasmoId}");
             }
 
             return Ok(odcinki);
@@ -62,20 +63,20 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpGet("adjacentOdcinki/{punktId}")]
         public async Task<ActionResult> GetAvailableOdcinkiForPunktTerenowy([FromRoute] int punktId)
         {
-            var odcinki = await _trasyPubliczneRepository.GetAllOdcinkiForPasmo(punktId);
+            var odcinki = await _trasyPubliczneRepository.GetAllOdcinkiForPunktTerenowy(punktId);
             if (odcinki is null)
             {
-                return BadRequest();
+                return NotFound($"Not found Punkt Terenowy with id {punktId}");
             }
 
             return Ok(odcinki);
         }
 
 
-        [HttpPost]
-        public async Task<ActionResult> CreateWycieczka([FromBody] Wycieczka wycieczka)
+        [HttpPost("wycieczka")]
+        public async Task<ActionResult> CreateWycieczka([FromBody] CreateWycieczkaViewModel model)
         {
-            var created = await _wycieczkaRepository.CreateWycieczka(wycieczka);
+            var created = await _wycieczkaRepository.CreateWycieczka(model.Uzytkownik);
             if (created is null)
             {
                 return BadRequest();
@@ -84,7 +85,7 @@ namespace KsiazeczkaPttk.API.Controllers
             return Ok(created);
         }
 
-        [HttpPost]
+        [HttpPost("odcinekPrywatny")]
         public async Task<ActionResult> CreateOdcinekPrywatny([FromBody] Odcinek odcinek)
         {
             var created = await _wycieczkaRepository.CreateOdcinekPrywatny(odcinek);

@@ -3,15 +3,17 @@ using System;
 using KsiazeczkaPttk.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KsiazeczkaPttk.DAL.Migrations
 {
     [DbContext(typeof(KsiazeczkaContext))]
-    partial class KsiazeczkaContextModelSnapshot : ModelSnapshot
+    [Migration("20211224121211_removeConstraint")]
+    partial class removeConstraint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
