@@ -32,9 +32,17 @@ namespace KsiazeczkaPttk.API.Controllers
 
         [HttpPost("qrCode/{odcinekId}")]
         public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithQrCode(
-            [FromRoute] int odcinekId, [FromBody] CreatePotwierdzenieTerenoweForOdcinekWithQrViewModel modelPotwierdzenia)
+            [FromRoute] int odcinekId, [FromBody] CreatePotwierdzenieWithQrViewModel modelPotwierdzenia)
         {
-            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithOr(nul, odcinekId);
+            var potwierdzenie = new PotwierdzenieTerenowe
+            {
+                Typ = modelPotwierdzenia.Typ,
+                Punkt = modelPotwierdzenia.PunktId,
+                Url = modelPotwierdzenia.Url,
+                Administracyjny = false,
+            };
+
+            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithOr(potwierdzenie, odcinekId);
             if (result is null)
             {
                 return BadRequest();
@@ -45,9 +53,17 @@ namespace KsiazeczkaPttk.API.Controllers
 
         [HttpPost("photo/{odcinekId}")]
         public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithPhoto(
-            [FromRoute] int odcinekId, [FromBody] CreatePotwierdzenieWithImageViewModel model)
+            [FromRoute] int odcinekId, [FromBody] CreatePotwierdzenieWithImageViewModel modelPotwierdzenia)
         {
-            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithPhoto(model.Potwierdzenie, odcinekId, model.Image);
+            var potwierdzenie = new PotwierdzenieTerenowe
+            {
+                Typ = modelPotwierdzenia.Typ,
+                Punkt = modelPotwierdzenia.PunktId,
+                Url = modelPotwierdzenia.Url,
+                Administracyjny = false,
+            };
+
+            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithPhoto(potwierdzenie, odcinekId, modelPotwierdzenia.Image);
             if (result is null)
             {
                 return BadRequest();

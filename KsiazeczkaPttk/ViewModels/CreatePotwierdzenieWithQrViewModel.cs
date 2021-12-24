@@ -1,6 +1,6 @@
 ﻿namespace KsiazeczkaPttk.API.ViewModels
 {
-    public class CreatePotwierdzenieTerenoweForOdcinekWithQrViewModel
+    public class CreatePotwierdzenieWithQrViewModel
     {
         public string Typ { get; set; }
         

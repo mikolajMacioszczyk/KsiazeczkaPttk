@@ -51,8 +51,6 @@ namespace KsiazeczkaPttk.DAL
             modelBuilder.Entity<ZamkniecieOdcinka>()
                .HasKey(x => new { x.OdcinekId, x.DataZamkniecia });
 
-            modelBuilder.UseIdentityColumns();
-
             base.OnModelCreating(modelBuilder);
         }
     }

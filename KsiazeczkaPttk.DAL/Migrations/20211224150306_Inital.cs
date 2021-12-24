@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KsiazeczkaPttk.DAL.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Inital : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -97,17 +97,17 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     Email = table.Column<string>(type: "character varying(160)", maxLength: 160, nullable: false),
                     Imie = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Nazwisko = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    RolaNazwa = table.Column<string>(type: "character varying(40)", nullable: true)
+                    Rola = table.Column<string>(type: "character varying(40)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Uzytkownicy", x => x.Login);
                     table.ForeignKey(
-                        name: "FK_Uzytkownicy_RoleUzytkownikow_RolaNazwa",
-                        column: x => x.RolaNazwa,
+                        name: "FK_Uzytkownicy_RoleUzytkownikow_Rola",
+                        column: x => x.Rola,
                         principalTable: "RoleUzytkownikow",
                         principalColumn: "Nazwa",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -216,7 +216,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     Od = table.Column<int>(type: "integer", nullable: false),
                     Do = table.Column<int>(type: "integer", nullable: false),
                     Pasmo = table.Column<int>(type: "integer", nullable: false),
-                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false)
+                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -244,7 +244,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         column: x => x.Wlasciciel,
                         principalTable: "Uzytkownicy",
                         principalColumn: "Login",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -468,9 +468,9 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 column: "Wlasciciel");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Uzytkownicy_RolaNazwa",
+                name: "IX_Uzytkownicy_Rola",
                 table: "Uzytkownicy",
-                column: "RolaNazwa");
+                column: "Rola");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Weryfikacje_Przodownik",

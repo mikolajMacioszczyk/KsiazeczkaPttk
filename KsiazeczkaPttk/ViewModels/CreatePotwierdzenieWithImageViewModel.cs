@@ -1,11 +1,15 @@
-﻿using KsiazeczkaPttk.Domain.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace KsiazeczkaPttk.API.ViewModels
 {
     public class CreatePotwierdzenieWithImageViewModel
     {
         public IFormFile Image { get; set; }
-        public PotwierdzenieTerenowe Potwierdzenie { get; set; }
+
+        public string Typ { get; set; }
+
+        public string Url { get; set; }
+
+        public int PunktId { get; set; }
     }
 }

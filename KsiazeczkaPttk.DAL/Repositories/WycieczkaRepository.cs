@@ -88,15 +88,19 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             if (odcinekFromDb is null || punktTerenowy is null)
             {
-                // error codes
                 return null;
             }
+
+            potwierdzenie.TypPotwierdzeniaTerenowego = await _context.TypyPotwierdzenTerenowych.FirstOrDefaultAsync(t => t.Typ == "KodQR");
 
             var potwierdzenieAdministracyjne = await _context.PotwierdzeniaTerenowe
                 .FirstOrDefaultAsync(p => p.Punkt == punktTerenowy.Id && p.Administracyjny);
 
             if (potwierdzenieAdministracyjne.Url == potwierdzenie.Url)
             {
+                // TODO: Use integrity
+                potwierdzenie.Id = new Random().Next();
+
                 return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
             }
 
@@ -113,6 +117,9 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 return null;
             }
 
+            potwierdzenie.TypPotwierdzeniaTerenowego = await _context.TypyPotwierdzenTerenowych.FirstOrDefaultAsync(t => t.Typ == "KodQR");
+            potwierdzenie.Id = new Random().Next();
+
             // where to save image
 
             return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
@@ -123,12 +130,14 @@ namespace KsiazeczkaPttk.DAL.Repositories
             await _context.PotwierdzeniaTerenowe.AddAsync(potwierdzenie);
             var potwierdzeniePrzebytego = new PotwierdzenieTerenowePrzebytegoOdcinka()
             {
+                Id = new Random().Next(),
                 Potwierdzenie = potwierdzenie.Id,
                 PotwierdzenieTerenowe = potwierdzenie,
                 PrzebytyOdcinekId = przebycieOdcinka.Id,
                 PrzebycieOdcinka = przebycieOdcinka
             };
             await _context.PotwierdzeniaTerenowePrzebytychOdcinkow.AddAsync(potwierdzeniePrzebytego);
+            await _context.SaveChangesAsync();
             return potwierdzenie;
         }
 
