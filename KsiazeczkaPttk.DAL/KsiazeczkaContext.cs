@@ -14,7 +14,6 @@ namespace KsiazeczkaPttk.DAL
         public DbSet<Ksiazeczka> Ksiazeczki { get; set; }
         public DbSet<RolaUzytkownika> RoleUzytkownikow { get; set; }
         public DbSet<Uzytkownik> Uzytkownicy { get; set; }
-        public DbSet<StatusWycieczki> StatusyWycieczek { get; set; }
         public DbSet<Wycieczka> Wycieczki { get; set; }
         public DbSet<Weryfikacje> Weryfikacje { get; set; }
         public DbSet<PunktTerenowy> PunktyTerenowe { get; set; }
@@ -22,7 +21,6 @@ namespace KsiazeczkaPttk.DAL
         public DbSet<PasmoGorskie> PasmaGorskie { get; set; }
         public DbSet<Odcinek> Odcinki { get; set; }
         public DbSet<ZamkniecieOdcinka> ZamknieciaOdcinkow { get; set; }
-        public DbSet<TypPotwierdzeniaTerenowego> TypyPotwierdzenTerenowych { get; set; }
         public DbSet<PotwierdzenieTerenowe> PotwierdzeniaTerenowe { get; set; }
         public DbSet<PrzebycieOdcinka> PrzebyteOdcinki { get; set; }
         public DbSet<PotwierdzenieTerenowePrzebytegoOdcinka> PotwierdzeniaTerenowePrzebytychOdcinkow { get; set; }

@@ -35,7 +35,7 @@ namespace KsiazeczkaPttk.API.Controllers
         {
             var potwierdzenie = new PotwierdzenieTerenowe
             {
-                Typ = "KodQR",
+                Typ = Domain.Enums.TypPotwierdzenia.KodQr,
                 Punkt = modelPotwierdzenia.PunktId,
                 Url = modelPotwierdzenia.Url,
                 Administracyjny = false,
@@ -55,7 +55,7 @@ namespace KsiazeczkaPttk.API.Controllers
         {
             var potwierdzenie = new PotwierdzenieTerenowe
             {
-                Typ = "Zdjecie",
+                Typ = Domain.Enums.TypPotwierdzenia.Zdjecie,
                 Punkt = modelPotwierdzenia.PunktId,
                 Url = modelPotwierdzenia.Url,
                 Administracyjny = false,

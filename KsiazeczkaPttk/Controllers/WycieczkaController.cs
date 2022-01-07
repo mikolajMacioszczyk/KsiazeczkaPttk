@@ -84,8 +84,8 @@ namespace KsiazeczkaPttk.API.Controllers
                 {
                     Wlasciciel = model.Wlasciciel,
                     Status = model.Status,
-                    Odcinki = model.PrzebyteOdcinki.Select(p => new PrzebycieOdcinka 
-                    { 
+                    Odcinki = model.PrzebyteOdcinki.Select(p => new PrzebycieOdcinka
+                    {
                         Kolejnosc = p.Kolejnosc,
                         Powrot = p.Powrot,
                         OdcinekId = p.OdcinekId,

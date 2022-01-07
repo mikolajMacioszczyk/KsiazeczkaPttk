@@ -47,28 +47,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StatusyWycieczek",
-                columns: table => new
-                {
-                    Status = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StatusyWycieczek", x => x.Status);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TypyPotwierdzenTerenowych",
-                columns: table => new
-                {
-                    Typ = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TypyPotwierdzenTerenowych", x => x.Typ);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PasmaGorskie",
                 columns: table => new
                 {
@@ -185,7 +163,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Status = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -195,12 +173,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         column: x => x.Wlasciciel,
                         principalTable: "Ksiazeczki",
                         principalColumn: "Wlasciciel",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Wycieczki_StatusyWycieczek_Status",
-                        column: x => x.Status,
-                        principalTable: "StatusyWycieczek",
-                        principalColumn: "Status",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -254,7 +226,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Typ = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Typ = table.Column<int>(type: "integer", nullable: false),
                     Url = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
                     Punkt = table.Column<int>(type: "integer", nullable: false),
                     Administracyjny = table.Column<bool>(type: "boolean", nullable: false)
@@ -267,12 +239,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         column: x => x.Punkt,
                         principalTable: "PunktyTerenowe",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PotwierdzeniaTerenowe_TypyPotwierdzenTerenowych_Typ",
-                        column: x => x.Typ,
-                        principalTable: "TypyPotwierdzenTerenowych",
-                        principalColumn: "Typ",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -433,11 +399,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 column: "Punkt");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PotwierdzeniaTerenowe_Typ",
-                table: "PotwierdzeniaTerenowe",
-                column: "Typ");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PotwierdzeniaTerenowePrzebytychOdcinkow_Potwierdzenie",
                 table: "PotwierdzeniaTerenowePrzebytychOdcinkow",
                 column: "Potwierdzenie");
@@ -484,11 +445,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 column: "Wycieczka");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Wycieczki_Status",
-                table: "Wycieczki",
-                column: "Status");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Wycieczki_Wlasciciel",
                 table: "Wycieczki",
                 column: "Wlasciciel");
@@ -518,9 +474,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 name: "PrzebyteOdcinki");
 
             migrationBuilder.DropTable(
-                name: "TypyPotwierdzenTerenowych");
-
-            migrationBuilder.DropTable(
                 name: "Odcinki");
 
             migrationBuilder.DropTable(
@@ -531,9 +484,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "PunktyTerenowe");
-
-            migrationBuilder.DropTable(
-                name: "StatusyWycieczek");
 
             migrationBuilder.DropTable(
                 name: "GrupyGorskie");

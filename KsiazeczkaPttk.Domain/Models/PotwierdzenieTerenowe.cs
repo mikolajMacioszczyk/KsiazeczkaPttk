@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using KsiazeczkaPttk.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KsiazeczkaPttk.Domain.Models
@@ -8,11 +9,7 @@ namespace KsiazeczkaPttk.Domain.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(30)]
-        public string Typ { get; set; }
-
-        [ForeignKey("Typ")]
-        public TypPotwierdzeniaTerenowego TypPotwierdzeniaTerenowego { get; set; }
+        public TypPotwierdzenia Typ { get; set; }
 
         [Required]
         [MaxLength(250)]

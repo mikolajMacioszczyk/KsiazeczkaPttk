@@ -187,10 +187,8 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     b.Property<int>("Punkt")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Typ")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                    b.Property<int>("Typ")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -200,8 +198,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Punkt");
-
-                    b.HasIndex("Typ");
 
                     b.ToTable("PotwierdzeniaTerenowe");
                 });
@@ -302,28 +298,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     b.ToTable("RoleUzytkownikow");
                 });
 
-            modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.StatusWycieczki", b =>
-                {
-                    b.Property<string>("Status")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Status");
-
-                    b.ToTable("StatusyWycieczek");
-                });
-
-            modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.TypPotwierdzeniaTerenowego", b =>
-                {
-                    b.Property<string>("Typ")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
-                    b.HasKey("Typ");
-
-                    b.ToTable("TypyPotwierdzenTerenowych");
-                });
-
             modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.Uzytkownik", b =>
                 {
                     b.Property<string>("Login")
@@ -402,10 +376,8 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Wlasciciel")
                         .IsRequired()
@@ -413,8 +385,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         .HasColumnType("character varying(30)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Status");
 
                     b.HasIndex("Wlasciciel");
 
@@ -523,15 +493,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KsiazeczkaPttk.Domain.Models.TypPotwierdzeniaTerenowego", "TypPotwierdzeniaTerenowego")
-                        .WithMany()
-                        .HasForeignKey("Typ")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("PunktTerenowy");
-
-                    b.Navigation("TypPotwierdzeniaTerenowego");
                 });
 
             modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.PotwierdzenieTerenowePrzebytegoOdcinka", b =>
@@ -613,12 +575,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
 
             modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.Wycieczka", b =>
                 {
-                    b.HasOne("KsiazeczkaPttk.Domain.Models.StatusWycieczki", "StatusWycieczki")
-                        .WithMany()
-                        .HasForeignKey("Status")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KsiazeczkaPttk.Domain.Models.Ksiazeczka", "Ksiazeczka")
                         .WithMany()
                         .HasForeignKey("Wlasciciel")
@@ -626,8 +582,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Ksiazeczka");
-
-                    b.Navigation("StatusWycieczki");
                 });
 
             modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.ZamkniecieOdcinka", b =>

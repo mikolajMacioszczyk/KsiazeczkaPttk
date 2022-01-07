@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using KsiazeczkaPttk.Domain.Enums;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,11 +17,7 @@ namespace KsiazeczkaPttk.Domain.Models
         public Ksiazeczka Ksiazeczka { get; set; }
 
         [Required]
-        [MaxLength(100)]
-        public string Status { get; set; }
-
-        [ForeignKey("Status")]
-        public StatusWycieczki StatusWycieczki { get; set; }
+        public StatusWycieczki Status { get; set; }
 
         public IEnumerable<PrzebycieOdcinka> Odcinki { get; set; }
     }

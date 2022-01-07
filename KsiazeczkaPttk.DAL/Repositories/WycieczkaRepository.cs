@@ -21,7 +21,6 @@ namespace KsiazeczkaPttk.DAL.Repositories
         public async Task<Wycieczka> GetById(int id)
         {
             return await _context.Wycieczki
-                .Include(w => w.StatusWycieczki)
                 .Include(w => w.Ksiazeczka)
                 .ThenInclude(k => k.WlascicielKsiazeczki)
                 .ThenInclude(u => u.RolaUzytkownika)
@@ -31,7 +30,6 @@ namespace KsiazeczkaPttk.DAL.Repositories
         public async Task<PrzebycieOdcinka> GetPrzebytyOdcinekById(int id)
         {
             return await _context.PrzebyteOdcinki
-                .Include(p => p.DotyczacaWycieczka)
                 .Include(p => p.Odcinek)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
@@ -58,11 +56,10 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 throw new ArgumentException("Nie znaleziono książeczki");
             }
 
-            wycieczka.Status = "Planowana";
-            wycieczka.StatusWycieczki = await _context.StatusyWycieczek.FirstOrDefaultAsync(s => s.Status == "Planowana");
+            wycieczka.Status = Domain.Enums.StatusWycieczki.Planowana;
 
             await _context.Wycieczki.AddAsync(wycieczka);
-            
+
             foreach (var przebycieOdcinka in wycieczka.Odcinki)
             {
                 var odcinekFromDb = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == przebycieOdcinka.OdcinekId);
@@ -70,7 +67,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 {
                     throw new ArgumentException("Nie znaleziono odcinka wycieczki");
                 }
-                
+
                 przebycieOdcinka.DotyczacaWycieczka = wycieczka;
                 przebycieOdcinka.Wycieczka = wycieczka.Id;
 
@@ -144,7 +141,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 return null;
             }
 
-            potwierdzenie.TypPotwierdzeniaTerenowego = await _context.TypyPotwierdzenTerenowych.FirstOrDefaultAsync(t => t.Typ == "KodQR");
+            potwierdzenie.Typ = Domain.Enums.TypPotwierdzenia.KodQr;
 
             var potwierdzenieAdministracyjne = await _context.PotwierdzeniaTerenowe
                 .FirstOrDefaultAsync(p => p.Punkt == punktTerenowy.Id && p.Administracyjny);
@@ -167,7 +164,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 return null;
             }
 
-            potwierdzenie.TypPotwierdzeniaTerenowego = await _context.TypyPotwierdzenTerenowych.FirstOrDefaultAsync(t => t.Typ == "KodQR");
+            potwierdzenie.Typ = Domain.Enums.TypPotwierdzenia.Zdjecie;
 
             // where to save image
 
