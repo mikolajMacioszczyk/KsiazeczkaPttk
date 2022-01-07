@@ -2,6 +2,8 @@
 using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace KsiazeczkaPttk.API.Controllers
@@ -76,7 +78,47 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpPost("wycieczka")]
         public async Task<ActionResult> CreateWycieczka([FromBody] CreateWycieczkaViewModel model)
         {
-            var created = await _wycieczkaRepository.CreateWycieczka(model.Uzytkownik);
+            try
+            {
+                var wycieczka = new Wycieczka
+                {
+                    Wlasciciel = model.Wlasciciel,
+                    Status = model.Status,
+                    Odcinki = model.PrzebyteOdcinki.Select(p => new PrzebycieOdcinka 
+                    { 
+                        Kolejnosc = p.Kolejnosc,
+                        Powrot = p.Powrot,
+                        OdcinekId = p.OdcinekId,
+                    })
+                };
+                var created = await _wycieczkaRepository.CreateWycieczka(wycieczka);
+                if (created is null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(created);
+            }
+            catch (ArgumentException exc)
+            {
+                return BadRequest(exc.Message);
+                throw;
+            }
+        }
+
+        [HttpPost("punktPrywatny")]
+        public async Task<ActionResult> CreatePunktPrywatny([FromBody] CreatePunktTerenowyViewModel viewModel)
+        {
+            var punktTerenowy = new PunktTerenowy
+            {
+                Nazwa = viewModel.Nazwa,
+                Lat = viewModel.Lat,
+                Lng = viewModel.Lng,
+                Mnpm = viewModel.Mnpm,
+                Wlasciciel = viewModel.Wlasciciel
+            };
+
+            var created = await _wycieczkaRepository.CreatePunktPrywatny(punktTerenowy);
             if (created is null)
             {
                 return BadRequest();
@@ -86,15 +128,34 @@ namespace KsiazeczkaPttk.API.Controllers
         }
 
         [HttpPost("odcinekPrywatny")]
-        public async Task<ActionResult> CreateOdcinekPrywatny([FromBody] Odcinek odcinek)
+        public async Task<ActionResult> CreateOdcinekPrywatny([FromBody] CreateOdcinekViewModel viewModel)
         {
-            var created = await _wycieczkaRepository.CreateOdcinekPrywatny(odcinek);
-            if (created is null)
+            var odcinek = new Odcinek
             {
-                return BadRequest();
-            }
+                Nazwa = viewModel.Nazwa,
+                Wersja = viewModel.Wersja,
+                Punkty = viewModel.Punkty,
+                PunktyPowrot = viewModel.PunktyPowrot,
+                Od = viewModel.Od,
+                Do = viewModel.Do,
+                Pasmo = viewModel.Pasmo,
+                Wlasciciel = viewModel.Wlasciciel
+            };
 
-            return Ok(created);
+            try
+            {
+                var created = await _wycieczkaRepository.CreateOdcinekPrywatny(odcinek);
+                if (created is null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(created);
+            } 
+            catch (ArgumentException exc)
+            {
+                return BadRequest(exc.Message);
+            }
         }
 
     }

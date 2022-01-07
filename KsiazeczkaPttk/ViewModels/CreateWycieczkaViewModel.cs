@@ -1,7 +1,11 @@
-﻿namespace KsiazeczkaPttk.API.ViewModels
+﻿using System.Collections.Generic;
+
+namespace KsiazeczkaPttk.API.ViewModels
 {
     public class CreateWycieczkaViewModel
     {
-        public string Uzytkownik { get; set; }
+        public string Wlasciciel { get; set; }
+        public string Status { get; set; }
+        public IEnumerable<PrzebycieOdcinkaViewModel> PrzebyteOdcinki { get; set; }
     }
 }

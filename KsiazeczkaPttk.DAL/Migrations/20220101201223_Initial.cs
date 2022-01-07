@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KsiazeczkaPttk.DAL.Migrations
 {
-    public partial class Inital : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -129,54 +129,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PunktyTerenowe",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Nazwa = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Lat = table.Column<double>(type: "double precision", nullable: false),
-                    Lng = table.Column<double>(type: "double precision", nullable: false),
-                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PunktyTerenowe", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PunktyTerenowe_Uzytkownicy_Wlasciciel",
-                        column: x => x.Wlasciciel,
-                        principalTable: "Uzytkownicy",
-                        principalColumn: "Login",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Wycieczki",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Status = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Wycieczki", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Wycieczki_StatusyWycieczek_Status",
-                        column: x => x.Status,
-                        principalTable: "StatusyWycieczek",
-                        principalColumn: "Status",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Wycieczki_Uzytkownicy_Wlasciciel",
-                        column: x => x.Wlasciciel,
-                        principalTable: "Uzytkownicy",
-                        principalColumn: "Login",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PosiadaneGotPttk",
                 columns: table => new
                 {
@@ -204,6 +156,55 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PunktyTerenowe",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nazwa = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Lat = table.Column<double>(type: "double precision", nullable: false),
+                    Lng = table.Column<double>(type: "double precision", nullable: false),
+                    Mnpm = table.Column<double>(type: "double precision", nullable: false),
+                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PunktyTerenowe", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PunktyTerenowe_Ksiazeczki_Wlasciciel",
+                        column: x => x.Wlasciciel,
+                        principalTable: "Ksiazeczki",
+                        principalColumn: "Wlasciciel",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Wycieczki",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Status = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Wycieczki", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Wycieczki_Ksiazeczki_Wlasciciel",
+                        column: x => x.Wlasciciel,
+                        principalTable: "Ksiazeczki",
+                        principalColumn: "Wlasciciel",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Wycieczki_StatusyWycieczek_Status",
+                        column: x => x.Status,
+                        principalTable: "StatusyWycieczek",
+                        principalColumn: "Status",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Odcinki",
                 columns: table => new
                 {
@@ -222,6 +223,12 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Odcinki", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Odcinki_Ksiazeczki_Wlasciciel",
+                        column: x => x.Wlasciciel,
+                        principalTable: "Ksiazeczki",
+                        principalColumn: "Wlasciciel",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Odcinki_PasmaGorskie_Pasmo",
                         column: x => x.Pasmo,
                         principalTable: "PasmaGorskie",
@@ -239,12 +246,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "PunktyTerenowe",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Odcinki_Uzytkownicy_Wlasciciel",
-                        column: x => x.Wlasciciel,
-                        principalTable: "Uzytkownicy",
-                        principalColumn: "Login",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -511,9 +512,6 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 name: "GotPttk");
 
             migrationBuilder.DropTable(
-                name: "Ksiazeczki");
-
-            migrationBuilder.DropTable(
                 name: "PotwierdzeniaTerenowe");
 
             migrationBuilder.DropTable(
@@ -539,6 +537,9 @@ namespace KsiazeczkaPttk.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "GrupyGorskie");
+
+            migrationBuilder.DropTable(
+                name: "Ksiazeczki");
 
             migrationBuilder.DropTable(
                 name: "Uzytkownicy");

@@ -15,10 +15,12 @@ namespace KsiazeczkaPttk.Domain.Models
 
         public double Lng { get; set; }
 
+        public double Mnpm { get; set; }
+
         [MaxLength(30)]
         public string Wlasciciel { get; set; }
 
         [ForeignKey("Wlasciciel")]
-        public Uzytkownik Uzytkownik { get; set; }
+        public Ksiazeczka Ksiazeczka { get; set; }
     }
 }

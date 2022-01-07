@@ -22,7 +22,8 @@ namespace KsiazeczkaPttk.DAL.Repositories
         {
             return await _context.Wycieczki
                 .Include(w => w.StatusWycieczki)
-                .Include(w => w.Uzytkownik)
+                .Include(w => w.Ksiazeczka)
+                .ThenInclude(k => k.WlascicielKsiazeczki)
                 .ThenInclude(u => u.RolaUzytkownika)
                 .FirstOrDefaultAsync(w => w.Id == id);
         }
@@ -48,37 +49,89 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Wycieczka> CreateWycieczka(string uzytkownik)
+        public async Task<Wycieczka> CreateWycieczka(Wycieczka wycieczka)
         {
-            var wlascicel = await _context.Uzytkownicy.FirstOrDefaultAsync(u => u.Login == uzytkownik);
+            wycieczka.Ksiazeczka = await _context.Ksiazeczki.FirstOrDefaultAsync(u => u.Wlasciciel == wycieczka.Wlasciciel);
 
-            if (wlascicel is null)
+            if (wycieczka.Ksiazeczka is null)
             {
-                return null;
+                throw new ArgumentException("Nie znaleziono książeczki");
             }
 
-            var status = await _context.StatusyWycieczek.FirstOrDefaultAsync(s => s.Status == "Planowana");
-
-            var wycieczka = new Wycieczka
-            {
-                Wlasciciel = uzytkownik,
-                Uzytkownik = wlascicel,
-                Status = status.Status,
-                StatusWycieczki = status
-            };
-
-            // use identity
-            wycieczka.Id = new Random().Next();
+            wycieczka.Status = "Planowana";
+            wycieczka.StatusWycieczki = await _context.StatusyWycieczek.FirstOrDefaultAsync(s => s.Status == "Planowana");
 
             await _context.Wycieczki.AddAsync(wycieczka);
+            
+            foreach (var przebycieOdcinka in wycieczka.Odcinki)
+            {
+                var odcinekFromDb = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == przebycieOdcinka.OdcinekId);
+                if (odcinekFromDb is null)
+                {
+                    throw new ArgumentException("Nie znaleziono odcinka wycieczki");
+                }
+                
+                przebycieOdcinka.DotyczacaWycieczka = wycieczka;
+                przebycieOdcinka.Wycieczka = wycieczka.Id;
+
+                await _context.PrzebyteOdcinki.AddAsync(przebycieOdcinka);
+            }
+
             await _context.SaveChangesAsync();
 
             return wycieczka;
         }
 
-        public Task<Odcinek> CreateOdcinekPrywatny(Odcinek odcinek)
+        public async Task<PunktTerenowy> CreatePunktPrywatny(PunktTerenowy punkt)
         {
-            throw new System.NotImplementedException();
+            var wlasciciel = await _context.Ksiazeczki.FirstOrDefaultAsync(k => k.Wlasciciel == punkt.Wlasciciel);
+            if (wlasciciel is null)
+            {
+                throw new ArgumentException("Nie znaleziono właściciela");
+            }
+
+            punkt.Ksiazeczka = wlasciciel;
+
+            var byName = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Nazwa == punkt.Nazwa);
+            if (byName != null)
+            {
+                throw new ArgumentException("Nazwa punktu terenowego nie jest unikalna");
+            }
+
+            await _context.PunktyTerenowe.AddAsync(punkt);
+            await _context.SaveChangesAsync();
+            return punkt;
+        }
+
+        public async Task<Odcinek> CreateOdcinekPrywatny(Odcinek odcinek)
+        {
+            odcinek.PunktTerenowyOd = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Od);
+            if (odcinek.PunktTerenowyOd is null)
+            {
+                throw new ArgumentException("Nie znaleziono punktu początkowego");
+            }
+
+            odcinek.PunktTerenowyDo = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Do);
+            if (odcinek.PunktTerenowyDo is null)
+            {
+                throw new ArgumentException("Nie znaleziono punktu końcowego");
+            }
+
+            odcinek.PasmoGorskie = await _context.PasmaGorskie.FirstOrDefaultAsync(p => p.Id == odcinek.Pasmo);
+            if (odcinek.PasmoGorskie is null)
+            {
+                throw new ArgumentException("Nie znaleziono pasma górskiego");
+            }
+
+            odcinek.Ksiazeczka = await _context.Ksiazeczki.FirstOrDefaultAsync(k => k.Wlasciciel == odcinek.Wlasciciel);
+            if (odcinek.Ksiazeczka is null)
+            {
+                throw new ArgumentException("Nie znaleziono właściciela");
+            }
+
+            await _context.Odcinki.AddAsync(odcinek);
+            await _context.SaveChangesAsync();
+            return odcinek;
         }
 
         public async Task<PotwierdzenieTerenowe> AddPotwierdzenieToOdcinekWithOr(PotwierdzenieTerenowe potwierdzenie, int odcinekId)
@@ -98,9 +151,6 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             if (potwierdzenieAdministracyjne.Url == potwierdzenie.Url)
             {
-                // TODO: Use integrity
-                potwierdzenie.Id = new Random().Next();
-
                 return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
             }
 
@@ -118,7 +168,6 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             potwierdzenie.TypPotwierdzeniaTerenowego = await _context.TypyPotwierdzenTerenowych.FirstOrDefaultAsync(t => t.Typ == "KodQR");
-            potwierdzenie.Id = new Random().Next();
 
             // where to save image
 
@@ -130,7 +179,6 @@ namespace KsiazeczkaPttk.DAL.Repositories
             await _context.PotwierdzeniaTerenowe.AddAsync(potwierdzenie);
             var potwierdzeniePrzebytego = new PotwierdzenieTerenowePrzebytegoOdcinka()
             {
-                Id = new Random().Next(),
                 Potwierdzenie = potwierdzenie.Id,
                 PotwierdzenieTerenowe = potwierdzenie,
                 PrzebytyOdcinekId = przebycieOdcinka.Id,
@@ -161,6 +209,6 @@ namespace KsiazeczkaPttk.DAL.Repositories
             _context.PotwierdzeniaTerenowe.Remove(potwierdzenie);
             await _context.SaveChangesAsync();
             return true;
-        }       
+        }
     }
 }

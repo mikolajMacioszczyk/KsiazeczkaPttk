@@ -2,10 +2,10 @@
 {
     public class CreatePotwierdzenieWithQrViewModel
     {
-        public string Typ { get; set; }
-        
         public string Url { get; set; }
 
         public int PunktId { get; set; }
+
+        public int OdcinekId { get; set; }
     }
 }

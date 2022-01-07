@@ -18,7 +18,7 @@ namespace KsiazeczkaPttk.API.Controllers
             _wycieczkaRepository = wycieczkaRepository;
         }
 
-        [HttpGet("potwierdzeniaOdcinka/{idOdcinka}")]
+        [HttpGet("{idOdcinka}")]
         public async Task<ActionResult> GetPotwierdzeniaOdcinka([FromRoute] int idOdcinka)
         {
             var odcinek = await _wycieczkaRepository.GetPrzebytyOdcinekById(idOdcinka);
@@ -30,19 +30,18 @@ namespace KsiazeczkaPttk.API.Controllers
             return Ok(await _wycieczkaRepository.GetPotwierdzeniaForOdcinek(odcinek));
         }
 
-        [HttpPost("qrCode/{odcinekId}")]
-        public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithQrCode(
-            [FromRoute] int odcinekId, [FromBody] CreatePotwierdzenieWithQrViewModel modelPotwierdzenia)
+        [HttpPost("qrCode")]
+        public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithQrCode([FromBody] CreatePotwierdzenieWithQrViewModel modelPotwierdzenia)
         {
             var potwierdzenie = new PotwierdzenieTerenowe
             {
-                Typ = modelPotwierdzenia.Typ,
+                Typ = "KodQR",
                 Punkt = modelPotwierdzenia.PunktId,
                 Url = modelPotwierdzenia.Url,
                 Administracyjny = false,
             };
 
-            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithOr(potwierdzenie, odcinekId);
+            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithOr(potwierdzenie, modelPotwierdzenia.OdcinekId);
             if (result is null)
             {
                 return BadRequest();
@@ -51,19 +50,18 @@ namespace KsiazeczkaPttk.API.Controllers
             return Ok(potwierdzenie);
         }
 
-        [HttpPost("photo/{odcinekId}")]
-        public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithPhoto(
-            [FromRoute] int odcinekId, [FromBody] CreatePotwierdzenieWithImageViewModel modelPotwierdzenia)
+        [HttpPost("photo")]
+        public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithPhoto([FromBody] CreatePotwierdzenieWithImageViewModel modelPotwierdzenia)
         {
             var potwierdzenie = new PotwierdzenieTerenowe
             {
-                Typ = modelPotwierdzenia.Typ,
+                Typ = "Zdjecie",
                 Punkt = modelPotwierdzenia.PunktId,
                 Url = modelPotwierdzenia.Url,
                 Administracyjny = false,
             };
 
-            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithPhoto(potwierdzenie, odcinekId, modelPotwierdzenia.Image);
+            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithPhoto(potwierdzenie, modelPotwierdzenia.OdcinekId, modelPotwierdzenia.Image);
             if (result is null)
             {
                 return BadRequest();

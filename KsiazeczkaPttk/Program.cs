@@ -16,7 +16,7 @@ namespace KsiazeczkaPttk
             using (var scope = host.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<KsiazeczkaContext>();
-                await KsiazeczkaSeed.Seed(context);
+                //await KsiazeczkaSeed.Seed(context);
             }
 
             await host.RunAsync();

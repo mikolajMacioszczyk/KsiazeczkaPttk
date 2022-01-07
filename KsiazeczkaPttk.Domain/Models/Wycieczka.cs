@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KsiazeczkaPttk.Domain.Models
@@ -12,7 +13,7 @@ namespace KsiazeczkaPttk.Domain.Models
         public string Wlasciciel { get; set; }
 
         [ForeignKey("Wlasciciel")]
-        public Uzytkownik Uzytkownik { get; set; }
+        public Ksiazeczka Ksiazeczka { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -20,5 +21,7 @@ namespace KsiazeczkaPttk.Domain.Models
 
         [ForeignKey("Status")]
         public StatusWycieczki StatusWycieczki { get; set; }
+
+        public IEnumerable<PrzebycieOdcinka> Odcinki { get; set; }
     }
 }

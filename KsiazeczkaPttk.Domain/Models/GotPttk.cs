@@ -12,7 +12,6 @@ namespace KsiazeczkaPttk.Domain.Models
 
         [MaxLength(100)]
         [Required]
-        // isUniqu()
         public string Poziom { get; set; }
     }
 }

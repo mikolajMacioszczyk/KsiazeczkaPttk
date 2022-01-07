@@ -6,10 +6,10 @@ namespace KsiazeczkaPttk.API.ViewModels
     {
         public IFormFile Image { get; set; }
 
-        public string Typ { get; set; }
-
         public string Url { get; set; }
 
         public int PunktId { get; set; }
+
+        public int OdcinekId { get; set; }
     }
 }

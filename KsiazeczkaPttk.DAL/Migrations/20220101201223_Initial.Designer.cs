@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KsiazeczkaPttk.DAL.Migrations
 {
     [DbContext(typeof(KsiazeczkaContext))]
-    [Migration("20211224150306_Inital")]
-    partial class Inital
+    [Migration("20220101201223_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -271,6 +271,9 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     b.Property<double>("Lng")
                         .HasColumnType("double precision");
 
+                    b.Property<double>("Mnpm")
+                        .HasColumnType("double precision");
+
                     b.Property<string>("Nazwa")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -471,17 +474,17 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KsiazeczkaPttk.Domain.Models.Uzytkownik", "Uzytkownik")
+                    b.HasOne("KsiazeczkaPttk.Domain.Models.Ksiazeczka", "Ksiazeczka")
                         .WithMany()
                         .HasForeignKey("Wlasciciel");
+
+                    b.Navigation("Ksiazeczka");
 
                     b.Navigation("PasmoGorskie");
 
                     b.Navigation("PunktTerenowyDo");
 
                     b.Navigation("PunktTerenowyOd");
-
-                    b.Navigation("Uzytkownik");
                 });
 
             modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.PasmoGorskie", b =>
@@ -573,11 +576,11 @@ namespace KsiazeczkaPttk.DAL.Migrations
 
             modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.PunktTerenowy", b =>
                 {
-                    b.HasOne("KsiazeczkaPttk.Domain.Models.Uzytkownik", "Uzytkownik")
+                    b.HasOne("KsiazeczkaPttk.Domain.Models.Ksiazeczka", "Ksiazeczka")
                         .WithMany()
                         .HasForeignKey("Wlasciciel");
 
-                    b.Navigation("Uzytkownik");
+                    b.Navigation("Ksiazeczka");
                 });
 
             modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.Uzytkownik", b =>
@@ -618,15 +621,15 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KsiazeczkaPttk.Domain.Models.Uzytkownik", "Uzytkownik")
+                    b.HasOne("KsiazeczkaPttk.Domain.Models.Ksiazeczka", "Ksiazeczka")
                         .WithMany()
                         .HasForeignKey("Wlasciciel")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("StatusWycieczki");
+                    b.Navigation("Ksiazeczka");
 
-                    b.Navigation("Uzytkownik");
+                    b.Navigation("StatusWycieczki");
                 });
 
             modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.ZamkniecieOdcinka", b =>

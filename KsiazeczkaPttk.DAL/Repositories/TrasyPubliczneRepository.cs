@@ -48,7 +48,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .Include(o => o.PasmoGorskie)
                 .Include(o => o.PunktTerenowyDo)
                 .Include(o => o.PunktTerenowyOd)
-                .Include(o => o.Uzytkownik)
+                .Include(o => o.Ksiazeczka)
                 .Where(p => p.Pasmo == idPasma)
                 .ToListAsync();
         }
@@ -65,7 +65,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .Include(o => o.PasmoGorskie)
                 .Include(o => o.PunktTerenowyDo)
                 .Include(o => o.PunktTerenowyOd)
-                .Include(o => o.Uzytkownik)
+                .Include(o => o.Ksiazeczka)
                 .Where(o => o.Od == idPunktuTerenowego || (o.Do == idPunktuTerenowego && o.PunktyPowrot > 0))
                 .ToListAsync();
         }
