@@ -24,6 +24,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .Include(w => w.Ksiazeczka)
                 .ThenInclude(k => k.WlascicielKsiazeczki)
                 .ThenInclude(u => u.RolaUzytkownika)
+                .Include(w => w.Odcinki)
                 .FirstOrDefaultAsync(w => w.Id == id);
         }
 
