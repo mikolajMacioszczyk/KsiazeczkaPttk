@@ -182,7 +182,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             potwierdzenie.Typ = Domain.Enums.TypPotwierdzenia.Zdjecie;
-            potwierdzenie.Url = _fileService.SaveFile(file);
+            potwierdzenie.Url = await _fileService.SaveFile(file);
 
             return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
         }

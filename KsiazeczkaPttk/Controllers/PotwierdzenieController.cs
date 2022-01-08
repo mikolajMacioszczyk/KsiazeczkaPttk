@@ -51,7 +51,7 @@ namespace KsiazeczkaPttk.API.Controllers
         }
 
         [HttpPost("photo")]
-        public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithPhoto([FromBody] CreatePotwierdzenieWithImageViewModel modelPotwierdzenia)
+        public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithPhoto([FromForm] CreatePotwierdzenieWithImageViewModel modelPotwierdzenia)
         {
             var potwierdzenie = new PotwierdzenieTerenowe
             {
