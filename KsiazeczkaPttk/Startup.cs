@@ -37,7 +37,9 @@ namespace KsiazeczkaPttk
 
             services.AddScoped<ITrasyPubliczneRepository, TrasyPubliczneRepository>();
             services.AddScoped<IWycieczkaRepository, WycieczkaRepository>();
+            services.AddScoped<IWeryfikacjaRepository, WeryfikacjaRepository>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IWeryfikacjaService, WeryfikacjaService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

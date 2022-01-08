@@ -25,6 +25,7 @@ namespace KsiazeczkaPttk.DAL
             var uzytkownicy = new List<Uzytkownik>()
             {
                 new Uzytkownik {Login = "Turysta1", Haslo = "Pa55word", Rola = roleUzytkownikow[1].Nazwa, RolaUzytkownika = roleUzytkownikow[1], Imie = "Johny", Nazwisko = "Rambo", Email = "johny.rambo@gmail.com"},
+                new Uzytkownik {Login = "Przodownik1", Haslo = "Pa55word", Rola = roleUzytkownikow[2].Nazwa, RolaUzytkownika = roleUzytkownikow[2], Imie = "Henry", Nazwisko = "Walton", Email = "henry.Walton@gmail.com"},
                 new Uzytkownik {Login = "Pracownik1", Haslo = "Pa55word", Rola = roleUzytkownikow[3].Nazwa, RolaUzytkownika = roleUzytkownikow[3], Imie = "Rocky", Nazwisko = "Balboa", Email = "rocky.balboa@gmail.com"},
             };
 

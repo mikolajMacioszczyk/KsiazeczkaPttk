@@ -15,7 +15,7 @@ namespace KsiazeczkaPttk.DAL
         public DbSet<RolaUzytkownika> RoleUzytkownikow { get; set; }
         public DbSet<Uzytkownik> Uzytkownicy { get; set; }
         public DbSet<Wycieczka> Wycieczki { get; set; }
-        public DbSet<Weryfikacje> Weryfikacje { get; set; }
+        public DbSet<Weryfikacja> Weryfikacje { get; set; }
         public DbSet<PunktTerenowy> PunktyTerenowe { get; set; }
         public DbSet<GrupaGorska> GrupyGorskie { get; set; }
         public DbSet<PasmoGorskie> PasmaGorskie { get; set; }

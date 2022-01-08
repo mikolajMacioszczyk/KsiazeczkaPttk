@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KsiazeczkaPttk.Domain.Models
 {
-    public class Weryfikacje
+    public class Weryfikacja
     {
         public int Id { get; set; }
 

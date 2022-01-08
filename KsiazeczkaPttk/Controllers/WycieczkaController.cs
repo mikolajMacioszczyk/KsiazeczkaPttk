@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace KsiazeczkaPttk.API.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class WycieczkaController : Controller
     {
         private readonly IWycieczkaRepository _wycieczkaRepository;
