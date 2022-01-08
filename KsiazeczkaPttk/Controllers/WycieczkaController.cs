@@ -132,7 +132,7 @@ namespace KsiazeczkaPttk.API.Controllers
             var odcinek = new Odcinek
             {
                 Nazwa = viewModel.Nazwa,
-                Wersja = viewModel.Wersja,
+                Wersja = 1,
                 Punkty = viewModel.Punkty,
                 PunktyPowrot = viewModel.PunktyPowrot,
                 Od = viewModel.Od,

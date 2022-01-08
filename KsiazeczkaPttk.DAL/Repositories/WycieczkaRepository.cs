@@ -142,6 +142,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             {
                 throw new ArgumentException("Nie znaleziono właściciela");
             }
+            odcinek.Wersja = 1;
 
             await _context.Odcinki.AddAsync(odcinek);
             await _context.SaveChangesAsync();

@@ -69,5 +69,106 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .Where(o => o.Od == idPunktuTerenowego || (o.Do == idPunktuTerenowego && o.PunktyPowrot > 0))
                 .ToListAsync();
         }
+
+        public async Task<Odcinek> GetOdcinekPublicznyById(int odcinekId)
+        {
+            var odcinek = await _context.Odcinki
+                .Include(o => o.PasmoGorskie)
+                .Include(o => o.PunktTerenowyDo)
+                .Include(o => o.PunktTerenowyOd)
+                .FirstOrDefaultAsync(o => o.Id == odcinekId);
+
+            if (odcinek is null || !string.IsNullOrEmpty(odcinek.Wlasciciel))
+            {
+                return null;
+            }
+            return odcinek;
+        }
+
+        public async Task<Odcinek> CreateOdcinekPubliczny(Odcinek odcinek)
+        {
+            odcinek.PunktTerenowyOd = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Od);
+            if (odcinek.PunktTerenowyOd is null)
+            {
+                throw new ArgumentException("Nie znaleziono punktu początkowego");
+            }
+
+            odcinek.PunktTerenowyDo = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Do);
+            if (odcinek.PunktTerenowyDo is null)
+            {
+                throw new ArgumentException("Nie znaleziono punktu końcowego");
+            }
+
+            odcinek.PasmoGorskie = await _context.PasmaGorskie.FirstOrDefaultAsync(p => p.Id == odcinek.Pasmo);
+            if (odcinek.PasmoGorskie is null)
+            {
+                throw new ArgumentException("Nie znaleziono pasma górskiego");
+            }
+
+            odcinek.Wersja = 1;
+            odcinek.Wlasciciel = null;
+
+            await _context.Odcinki.AddAsync(odcinek);
+            await _context.SaveChangesAsync();
+            return odcinek;
+        }
+
+        public async Task<Odcinek> EditOdcinekPubliczny(int odcinekId, Odcinek odcinek)
+        {
+            var odcinekFromDb = await _context.Odcinki.Include(o => o.Ksiazeczka)
+                                        .FirstOrDefaultAsync(o => o.Id == odcinekId);
+            if (odcinekFromDb is null)
+            {
+                throw new ArgumentException("Nie znaleziono pasma górskiego");
+            }
+            if (odcinekFromDb.Ksiazeczka != null)
+            {
+                return null;
+            }
+
+            odcinek.PunktTerenowyOd = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Od);
+            if (odcinek.PunktTerenowyOd is null)
+            {
+                throw new ArgumentException("Nie znaleziono punktu początkowego");
+            }
+
+            odcinek.PunktTerenowyDo = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Do);
+            if (odcinek.PunktTerenowyDo is null)
+            {
+                throw new ArgumentException("Nie znaleziono punktu końcowego");
+            }
+
+            odcinek.PasmoGorskie = await _context.PasmaGorskie.FirstOrDefaultAsync(p => p.Id == odcinek.Pasmo);
+            if (odcinek.PasmoGorskie is null)
+            {
+                throw new ArgumentException("Nie znaleziono pasma górskiego");
+            }
+
+            odcinek.Wersja = odcinekFromDb.Wersja + 1;
+            odcinek.Wlasciciel = null;
+
+            await _context.Odcinki.AddAsync(odcinek);
+            await _context.SaveChangesAsync();
+            return odcinek;
+        }
+
+        public async Task<bool> DeleteOdcinekPubliczny(int odcinekId)
+        {
+            var odcinekFromDb = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == odcinekId);
+            if (odcinekFromDb is null)
+            {
+                return false;
+            }
+
+            var canRemove = await _context.PrzebyteOdcinki.FirstOrDefaultAsync(p => p.OdcinekId == odcinekId) is null;
+        
+            if (canRemove)
+            {
+                _context.Odcinki.Remove(odcinekFromDb);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
     }
 }
