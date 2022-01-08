@@ -74,7 +74,7 @@ namespace KsiazeczkaPttk.DAL
 
             var punktyTerenowePrywatne = new List<PunktTerenowy>
             {
-                new PunktTerenowy { Id = int.MaxValue - 1, Nazwa = "Dolina Pańczyca", Lat = 49.2414, Lng = 20.0172, Mnpm = 1628, Wlasciciel = ksiazeczki[0].Wlasciciel, Ksiazeczka = ksiazeczki[0] },
+                new PunktTerenowy { Id = 101, Nazwa = "Dolina Pańczyca", Lat = 49.2414, Lng = 20.0172, Mnpm = 1628, Wlasciciel = ksiazeczki[0].Wlasciciel, Ksiazeczka = ksiazeczki[0] },
             };
 
             var odcinkiPubliczne = new List<Odcinek>
@@ -88,7 +88,7 @@ namespace KsiazeczkaPttk.DAL
 
             var odcinkiPrywatne = new List<Odcinek>
             {
-                new Odcinek { Id = int.MaxValue - 1, Wersja = 1, Nazwa = "Ze Schroniska PTTK na Hali Gąsienicowej do Doliny Pańczyca", Punkty = 2, PunktyPowrot = 3, Od = punktyTerenowePubliczne[9].Id, PunktTerenowyOd = punktyTerenowePubliczne[9], Do = punktyTerenowePrywatne[0].Id, PunktTerenowyDo = punktyTerenowePrywatne[0], Pasmo = pasmaGorskie[0].Id, PasmoGorskie = pasmaGorskie[0], Wlasciciel = ksiazeczki[0].Wlasciciel, Ksiazeczka = ksiazeczki[0] },
+                new Odcinek { Id = 101, Wersja = 1, Nazwa = "Ze Schroniska PTTK na Hali Gąsienicowej do Doliny Pańczyca", Punkty = 2, PunktyPowrot = 3, Od = punktyTerenowePubliczne[9].Id, PunktTerenowyOd = punktyTerenowePubliczne[9], Do = punktyTerenowePrywatne[0].Id, PunktTerenowyDo = punktyTerenowePrywatne[0], Pasmo = pasmaGorskie[0].Id, PasmoGorskie = pasmaGorskie[0], Wlasciciel = ksiazeczki[0].Wlasciciel, Ksiazeczka = ksiazeczki[0] },
             };
 
             var wycieczki = new List<Wycieczka>
@@ -122,12 +122,12 @@ namespace KsiazeczkaPttk.DAL
 
             var potwierdzeniaPrywatne = new List<PotwierdzenieTerenowe>
             {
-                new PotwierdzenieTerenowe { Id = int.MaxValue - 1, Url = "RusinowaPolanaUrl", Punkt = punktyTerenowePubliczne[0].Id, PunktTerenowy = punktyTerenowePubliczne[0], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
-                new PotwierdzenieTerenowe { Id = int.MaxValue - 2, Url = "DolinaPańczycaUrl", Punkt = punktyTerenowePrywatne[0].Id, PunktTerenowy = punktyTerenowePrywatne[0], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.Zdjecie },
-                new PotwierdzenieTerenowe { Id = int.MaxValue - 3, Url = "GęsiaSzyjaUrl", Punkt = punktyTerenowePubliczne[2].Id, PunktTerenowy = punktyTerenowePubliczne[2], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.Zdjecie },
-                new PotwierdzenieTerenowe { Id = int.MaxValue - 4, Url = "RówieńWaksmundzkaUrl", Punkt = punktyTerenowePubliczne[3].Id, PunktTerenowy = punktyTerenowePubliczne[3], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
-                new PotwierdzenieTerenowe { Id = int.MaxValue - 5, Url = "PsiaTrawkaUrl", Punkt = punktyTerenowePubliczne[4].Id, PunktTerenowy = punktyTerenowePubliczne[4], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
-                new PotwierdzenieTerenowe { Id = int.MaxValue - 6, Url = "SchroniskoPTTKnaHaliGąsienicowejUrl", Punkt = punktyTerenowePubliczne[9].Id, PunktTerenowy = punktyTerenowePubliczne[9], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
+                new PotwierdzenieTerenowe { Id = 101, Url = "RusinowaPolanaUrl", Punkt = punktyTerenowePubliczne[0].Id, PunktTerenowy = punktyTerenowePubliczne[0], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
+                new PotwierdzenieTerenowe { Id = 102, Url = "DolinaPańczycaUrl", Punkt = punktyTerenowePrywatne[0].Id, PunktTerenowy = punktyTerenowePrywatne[0], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.Zdjecie },
+                new PotwierdzenieTerenowe { Id = 103, Url = "GęsiaSzyjaUrl", Punkt = punktyTerenowePubliczne[2].Id, PunktTerenowy = punktyTerenowePubliczne[2], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.Zdjecie },
+                new PotwierdzenieTerenowe { Id = 104, Url = "RówieńWaksmundzkaUrl", Punkt = punktyTerenowePubliczne[3].Id, PunktTerenowy = punktyTerenowePubliczne[3], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
+                new PotwierdzenieTerenowe { Id = 105, Url = "PsiaTrawkaUrl", Punkt = punktyTerenowePubliczne[4].Id, PunktTerenowy = punktyTerenowePubliczne[4], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
+                new PotwierdzenieTerenowe { Id = 106, Url = "SchroniskoPTTKnaHaliGąsienicowejUrl", Punkt = punktyTerenowePubliczne[9].Id, PunktTerenowy = punktyTerenowePubliczne[9], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
             };
 
             var potwierdzeniaOdcinkow = new List<PotwierdzenieTerenowePrzebytegoOdcinka>

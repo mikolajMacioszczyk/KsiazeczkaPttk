@@ -12,20 +12,29 @@ namespace KsiazeczkaPttk.DAL.Repositories
     public class WycieczkaRepository : IWycieczkaRepository
     {
         private readonly KsiazeczkaContext _context;
+        private readonly IFileService _fileService;
 
-        public WycieczkaRepository(KsiazeczkaContext context)
+        public WycieczkaRepository(KsiazeczkaContext context, IFileService fileService)
         {
             _context = context;
+            _fileService = fileService;
         }
 
         public async Task<Wycieczka> GetById(int id)
         {
-            return await _context.Wycieczki
+            var wycieczka = await _context.Wycieczki
                 .Include(w => w.Ksiazeczka)
                 .ThenInclude(k => k.WlascicielKsiazeczki)
                 .ThenInclude(u => u.RolaUzytkownika)
                 .Include(w => w.Odcinki)
                 .FirstOrDefaultAsync(w => w.Id == id);
+            
+            foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
+            {
+                odcinek.DotyczacaWycieczka = null;
+            }
+
+            return wycieczka;
         }
 
         public async Task<PrzebycieOdcinka> GetPrzebytyOdcinekById(int id)
@@ -58,6 +67,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             wycieczka.Status = Domain.Enums.StatusWycieczki.Planowana;
+            wycieczka.Odcinki = wycieczka.Odcinki.ToList();
 
             await _context.Wycieczki.AddAsync(wycieczka);
 
@@ -69,6 +79,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                     throw new ArgumentException("Nie znaleziono odcinka wycieczki");
                 }
 
+                przebycieOdcinka.Odcinek = odcinekFromDb;
                 przebycieOdcinka.DotyczacaWycieczka = wycieczka;
                 przebycieOdcinka.Wycieczka = wycieczka.Id;
 
@@ -76,6 +87,11 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             await _context.SaveChangesAsync();
+
+            foreach (var przebycieOdcinka in wycieczka.Odcinki)
+            {
+                przebycieOdcinka.DotyczacaWycieczka = null;
+            }
 
             return wycieczka;
         }
@@ -166,8 +182,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             potwierdzenie.Typ = Domain.Enums.TypPotwierdzenia.Zdjecie;
-
-            // where to save image
+            potwierdzenie.Url = _fileService.SaveFile(file);
 
             return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
         }
@@ -175,6 +190,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
         private async Task<PotwierdzenieTerenowe> AddPotwierdzenieToOdcinek(PotwierdzenieTerenowe potwierdzenie, PrzebycieOdcinka przebycieOdcinka)
         {
             await _context.PotwierdzeniaTerenowe.AddAsync(potwierdzenie);
+            await _context.SaveChangesAsync();
             var potwierdzeniePrzebytego = new PotwierdzenieTerenowePrzebytegoOdcinka()
             {
                 Potwierdzenie = potwierdzenie.Id,
@@ -206,6 +222,12 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             _context.PotwierdzeniaTerenowe.Remove(potwierdzenie);
             await _context.SaveChangesAsync();
+
+            if (potwierdzenie.Typ == Domain.Enums.TypPotwierdzenia.Zdjecie)
+            {
+                _fileService.RemoveFile(potwierdzenie.Url);
+            }
+
             return true;
         }
     }

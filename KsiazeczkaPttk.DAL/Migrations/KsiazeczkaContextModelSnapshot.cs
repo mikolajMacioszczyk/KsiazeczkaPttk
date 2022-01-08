@@ -4,7 +4,6 @@ using KsiazeczkaPttk.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KsiazeczkaPttk.DAL.Migrations
 {
@@ -15,25 +14,23 @@ namespace KsiazeczkaPttk.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.13")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64)
+                .HasAnnotation("ProductVersion", "5.0.13");
 
             modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.GotPttk", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<string>("Nazwa")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Poziom")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -47,13 +44,12 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<string>("Nazwa")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -67,10 +63,10 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<string>("Wlasciciel")
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.Property<bool>("Niepelnosprawnosc")
-                        .HasColumnType("boolean");
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Wlasciciel");
 
@@ -81,35 +77,34 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<int>("Do")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Nazwa")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("Od")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("Pasmo")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("Punkty")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("PunktyPowrot")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("Wersja")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Wlasciciel")
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.HasKey("Id");
 
@@ -128,16 +123,15 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<int>("Grupa")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Nazwa")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -153,19 +147,19 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<string>("Wlasciciel")
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.Property<int>("Odznaka")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("DataPrzyznania")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("DataRozpoczeciaZdobywania")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DataZakonczeniaZdobywania")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Wlasciciel", "Odznaka");
 
@@ -178,22 +172,21 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<bool>("Administracyjny")
-                        .HasColumnType("boolean");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("Punkt")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("Typ")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasColumnType("varchar(250)");
 
                     b.HasKey("Id");
 
@@ -206,14 +199,13 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<int>("Potwierdzenie")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("PrzebytyOdcinekId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -228,20 +220,19 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<int>("Kolejnosc")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<int>("OdcinekId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<bool>("Powrot")
-                        .HasColumnType("boolean");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("Wycieczka")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -256,26 +247,25 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<double>("Lat")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<double>("Lng")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<double>("Mnpm")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double");
 
                     b.Property<string>("Nazwa")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Wlasciciel")
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.HasKey("Id");
 
@@ -291,7 +281,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<string>("Nazwa")
                         .HasMaxLength(40)
-                        .HasColumnType("character varying(40)");
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Nazwa");
 
@@ -302,31 +292,31 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<string>("Login")
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(160)
-                        .HasColumnType("character varying(160)");
+                        .HasColumnType("varchar(160)");
 
                     b.Property<string>("Haslo")
                         .IsRequired()
                         .HasMaxLength(160)
-                        .HasColumnType("character varying(160)");
+                        .HasColumnType("varchar(160)");
 
                     b.Property<string>("Imie")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.Property<string>("Nazwisko")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Rola")
                         .IsRequired()
-                        .HasColumnType("character varying(40)");
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Login");
 
@@ -339,26 +329,25 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Data")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("PowodOdrzucenia")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Przodownik")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.Property<int>("Wycieczka")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<bool>("Zaakceptiowana")
-                        .HasColumnType("boolean");
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 
@@ -373,16 +362,15 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("Wlasciciel")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("varchar(30)");
 
                     b.HasKey("Id");
 
@@ -394,17 +382,17 @@ namespace KsiazeczkaPttk.DAL.Migrations
             modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.ZamkniecieOdcinka", b =>
                 {
                     b.Property<int>("OdcinekId")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DataZamkniecia")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DataOtwarcia")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Przyczyna")
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("varchar(200)");
 
                     b.HasKey("OdcinekId", "DataZamkniecia");
 

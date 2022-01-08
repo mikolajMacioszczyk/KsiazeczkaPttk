@@ -1,6 +1,7 @@
 using KsiazeczkaPttk.DAL;
 using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.DAL.Repositories;
+using KsiazeczkaPttk.DAL.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,11 +31,13 @@ namespace KsiazeczkaPttk
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var mySqlConnectionStr = Configuration.GetConnectionString("MySQLConnection");
             services.AddDbContext<KsiazeczkaContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PostgresConnection")));
+                options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
 
             services.AddScoped<ITrasyPubliczneRepository, TrasyPubliczneRepository>();
             services.AddScoped<IWycieczkaRepository, WycieczkaRepository>();
+            services.AddScoped<IFileService, FileService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

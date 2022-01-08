@@ -5,7 +5,6 @@ namespace KsiazeczkaPttk.Domain.Models
 {
     public class PrzebycieOdcinka
     {
-        [Key]
         public int Id { get; set; }
 
         public int Kolejnosc { get; set; }

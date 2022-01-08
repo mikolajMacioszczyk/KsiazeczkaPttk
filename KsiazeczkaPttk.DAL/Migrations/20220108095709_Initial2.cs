@@ -1,59 +1,70 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace KsiazeczkaPttk.DAL.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Initial2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateTable(
                 name: "GotPttk",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Nazwa = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Poziom = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Nazwa = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Poziom = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GotPttk", x => x.Id);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "GrupyGorskie",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Nazwa = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Nazwa = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GrupyGorskie", x => x.Id);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "RoleUzytkownikow",
                 columns: table => new
                 {
-                    Nazwa = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false)
+                    Nazwa = table.Column<string>(type: "varchar(40)", maxLength: 40, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RoleUzytkownikow", x => x.Nazwa);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PasmaGorskie",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Nazwa = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Grupa = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Nazwa = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Grupa = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,18 +75,25 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "GrupyGorskie",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Uzytkownicy",
                 columns: table => new
                 {
-                    Login = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Haslo = table.Column<string>(type: "character varying(160)", maxLength: 160, nullable: false),
-                    Email = table.Column<string>(type: "character varying(160)", maxLength: 160, nullable: false),
-                    Imie = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Nazwisko = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Rola = table.Column<string>(type: "character varying(40)", nullable: false)
+                    Login = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Haslo = table.Column<string>(type: "varchar(160)", maxLength: 160, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "varchar(160)", maxLength: 160, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Imie = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Nazwisko = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Rola = table.Column<string>(type: "varchar(40)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -86,14 +104,16 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "RoleUzytkownikow",
                         principalColumn: "Nazwa",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Ksiazeczki",
                 columns: table => new
                 {
-                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Niepelnosprawnosc = table.Column<bool>(type: "boolean", nullable: false)
+                    Wlasciciel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Niepelnosprawnosc = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -104,17 +124,19 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "Uzytkownicy",
                         principalColumn: "Login",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PosiadaneGotPttk",
                 columns: table => new
                 {
-                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Odznaka = table.Column<int>(type: "integer", nullable: false),
-                    DataRozpoczeciaZdobywania = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    DataZakonczeniaZdobywania = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    DataPrzyznania = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                    Wlasciciel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Odznaka = table.Column<int>(type: "int", nullable: false),
+                    DataRozpoczeciaZdobywania = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DataZakonczeniaZdobywania = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    DataPrzyznania = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -131,19 +153,22 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "Ksiazeczki",
                         principalColumn: "Wlasciciel",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PunktyTerenowe",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Nazwa = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Lat = table.Column<double>(type: "double precision", nullable: false),
-                    Lng = table.Column<double>(type: "double precision", nullable: false),
-                    Mnpm = table.Column<double>(type: "double precision", nullable: false),
-                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Nazwa = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Lat = table.Column<double>(type: "double", nullable: false),
+                    Lng = table.Column<double>(type: "double", nullable: false),
+                    Mnpm = table.Column<double>(type: "double", nullable: false),
+                    Wlasciciel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -154,16 +179,18 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "Ksiazeczki",
                         principalColumn: "Wlasciciel",
                         onDelete: ReferentialAction.Restrict);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Wycieczki",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Wlasciciel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -174,22 +201,25 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "Ksiazeczki",
                         principalColumn: "Wlasciciel",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Odcinki",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Wersja = table.Column<int>(type: "integer", nullable: false),
-                    Nazwa = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Punkty = table.Column<int>(type: "integer", nullable: false),
-                    PunktyPowrot = table.Column<int>(type: "integer", nullable: false),
-                    Od = table.Column<int>(type: "integer", nullable: false),
-                    Do = table.Column<int>(type: "integer", nullable: false),
-                    Pasmo = table.Column<int>(type: "integer", nullable: false),
-                    Wlasciciel = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Wersja = table.Column<int>(type: "int", nullable: false),
+                    Nazwa = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Punkty = table.Column<int>(type: "int", nullable: false),
+                    PunktyPowrot = table.Column<int>(type: "int", nullable: false),
+                    Od = table.Column<int>(type: "int", nullable: false),
+                    Do = table.Column<int>(type: "int", nullable: false),
+                    Pasmo = table.Column<int>(type: "int", nullable: false),
+                    Wlasciciel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -218,18 +248,20 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "PunktyTerenowe",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PotwierdzeniaTerenowe",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Typ = table.Column<int>(type: "integer", nullable: false),
-                    Url = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
-                    Punkt = table.Column<int>(type: "integer", nullable: false),
-                    Administracyjny = table.Column<bool>(type: "boolean", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Typ = table.Column<int>(type: "int", nullable: false),
+                    Url = table.Column<string>(type: "varchar(250)", maxLength: 250, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Punkt = table.Column<int>(type: "int", nullable: false),
+                    Administracyjny = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -240,19 +272,22 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "PunktyTerenowe",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Weryfikacje",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Wycieczka = table.Column<int>(type: "integer", nullable: false),
-                    Przodownik = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Zaakceptiowana = table.Column<bool>(type: "boolean", nullable: false),
-                    PowodOdrzucenia = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Wycieczka = table.Column<int>(type: "int", nullable: false),
+                    Przodownik = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Data = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Zaakceptiowana = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    PowodOdrzucenia = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -269,18 +304,19 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "Wycieczki",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PrzebyteOdcinki",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Kolejnosc = table.Column<int>(type: "integer", nullable: false),
-                    Wycieczka = table.Column<int>(type: "integer", nullable: false),
-                    OdcinekId = table.Column<int>(type: "integer", nullable: false),
-                    Powrot = table.Column<bool>(type: "boolean", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Kolejnosc = table.Column<int>(type: "int", nullable: false),
+                    Wycieczka = table.Column<int>(type: "int", nullable: false),
+                    OdcinekId = table.Column<int>(type: "int", nullable: false),
+                    Powrot = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -297,16 +333,18 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "Wycieczki",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "ZamknieciaOdcinkow",
                 columns: table => new
                 {
-                    OdcinekId = table.Column<int>(type: "integer", nullable: false),
-                    DataZamkniecia = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    DataOtwarcia = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    Przyczyna = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true)
+                    OdcinekId = table.Column<int>(type: "int", nullable: false),
+                    DataZamkniecia = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DataOtwarcia = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    Przyczyna = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -317,33 +355,35 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         principalTable: "Odcinki",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "PotwierdzeniaTerenowePrzebytychOdcinkow",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Potwierdzenie = table.Column<int>(type: "integer", nullable: false),
-                    PrzebytyOdcinekId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Potwierdzenie = table.Column<int>(type: "int", nullable: false),
+                    PrzebytyOdcinekId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PotwierdzeniaTerenowePrzebytychOdcinkow", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PotwierdzeniaTerenowePrzebytychOdcinkow_PotwierdzeniaTereno~",
+                        name: "FK_PotwierdzeniaTerenowePrzebytychOdcinkow_PotwierdzeniaTerenow~",
                         column: x => x.Potwierdzenie,
                         principalTable: "PotwierdzeniaTerenowe",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PotwierdzeniaTerenowePrzebytychOdcinkow_PrzebyteOdcinki_Prz~",
+                        name: "FK_PotwierdzeniaTerenowePrzebytychOdcinkow_PrzebyteOdcinki_Prze~",
                         column: x => x.PrzebytyOdcinekId,
                         principalTable: "PrzebyteOdcinki",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GotPttk_Poziom",

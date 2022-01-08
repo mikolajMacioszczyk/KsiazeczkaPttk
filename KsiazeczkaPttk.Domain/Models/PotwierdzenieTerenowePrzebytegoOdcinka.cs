@@ -5,7 +5,6 @@ namespace KsiazeczkaPttk.Domain.Models
 {
     public class PotwierdzenieTerenowePrzebytegoOdcinka
     {
-        [Key]
         public int Id { get; set; }
 
         [Required]
