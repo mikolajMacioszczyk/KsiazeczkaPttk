@@ -2,9 +2,6 @@
 using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace KsiazeczkaPttk.API.Controllers
@@ -23,14 +20,14 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpGet("{idOdcinka}")]
         public async Task<IActionResult> GetOdcinekPublicznyById(int idOdcinka)
         {
-            var odcinek = await _trasyPubliczneRepository.GetOdcinekPublicznyById(idOdcinka);
+            var odcinekResult = await _trasyPubliczneRepository.GetOdcinekPublicznyById(idOdcinka);
             
-            if (odcinek is null)
+            if (odcinekResult.IsSuccesful)
             {
-                return NotFound();
+                return Ok(odcinekResult.Value);
             }
 
-            return Ok(odcinek);
+            return NotFound();
         }
 
         [HttpPost]
@@ -47,20 +44,13 @@ namespace KsiazeczkaPttk.API.Controllers
                 Wersja = 1,
             };
 
-            try
+            
+            var createdResult = await _trasyPubliczneRepository.CreateOdcinekPubliczny(odcinek);
+            if (createdResult.IsSuccesful)
             {
-                var created = await _trasyPubliczneRepository.CreateOdcinekPubliczny(odcinek);
-                if (created != null)
-                {
-                    return Ok(created);
-                }
+                return Ok(createdResult.Value);
             }
-            catch (ArgumentException exc)
-            {
-                return BadRequest(exc.Message);
-            }
-
-            return BadRequest();
+            return BadRequest(createdResult.Message);
         }
 
         [HttpPost("{idOdcinka}")]
@@ -76,20 +66,12 @@ namespace KsiazeczkaPttk.API.Controllers
                 PunktyPowrot = viewModel.PunktyPowrot,
             };
 
-            try
+            var editedResult = await _trasyPubliczneRepository.EditOdcinekPubliczny(idOdcinka, odcinek);
+            if (editedResult.IsSuccesful)
             {
-                var edited = await _trasyPubliczneRepository.EditOdcinekPubliczny(idOdcinka, odcinek);
-                if (edited != null)
-                {
-                    return Ok(edited);
-                }
+                return Ok(editedResult.Value);
             }
-            catch (ArgumentException exc)
-            {
-                return BadRequest(exc.Message);
-            }
-
-            return BadRequest();
+            return BadRequest(editedResult.Message);
         }
 
         [HttpDelete("{idOdcinka}")]

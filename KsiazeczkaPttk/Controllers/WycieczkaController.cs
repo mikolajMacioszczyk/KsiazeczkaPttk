@@ -2,7 +2,6 @@
 using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,68 +42,59 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpGet("availablePasmaGorskie/{grupaId}")]
         public async Task<ActionResult> GetAvailablePasmaGorskie([FromRoute] int grupaId)
         {
-            var pasma = await _trasyPubliczneRepository.GetAllPasmaGorskieForGrupa(grupaId);
-            if (pasma is null)
-            {
-                return NotFound($"Not found Grupa Górska with id {grupaId}");
-            }
-
-            return Ok(pasma);
+            var pasmaResult = await _trasyPubliczneRepository.GetAllPasmaGorskieForGrupa(grupaId);
+            
+            return UnpackResult(pasmaResult);
         }
 
         [HttpGet("availableOdcinki/{pasmoId}")]
         public async Task<ActionResult> GetAvailableOdcinkiForPasmo([FromRoute] int pasmoId)
         {
-            var odcinki = await _trasyPubliczneRepository.GetAllOdcinkiForPasmo(pasmoId);
-            if (odcinki is null)
-            {
-                return NotFound($"Not found Pasmo Górskie with id {pasmoId}");
-            }
-
-            return Ok(odcinki);
+            var odcinkiResult = await _trasyPubliczneRepository.GetAllOdcinkiForPasmo(pasmoId);
+            
+            return UnpackResult(odcinkiResult);
         }
 
         [HttpGet("adjacentOdcinki/{punktId}")]
         public async Task<ActionResult> GetAvailableOdcinkiForPunktTerenowy([FromRoute] int punktId)
         {
-            var odcinki = await _trasyPubliczneRepository.GetAllOdcinkiForPunktTerenowy(punktId);
-            if (odcinki is null)
+            var odcinkiResult = await _trasyPubliczneRepository.GetAllOdcinkiForPunktTerenowy(punktId);
+
+            return UnpackResult(odcinkiResult);
+        }
+
+        private ActionResult UnpackResult<T>(Result<T> result)
+        {
+            if (result.IsSuccesful)
             {
-                return NotFound($"Not found Punkt Terenowy with id {punktId}");
+                return Ok(result.Value);
             }
 
-            return Ok(odcinki);
+            return NotFound(result.Message);
         }
 
 
         [HttpPost("wycieczka")]
         public async Task<ActionResult> CreateWycieczka([FromBody] CreateWycieczkaViewModel model)
         {
-            try
+            var wycieczka = new Wycieczka
             {
-                var wycieczka = new Wycieczka
+                Wlasciciel = model.Wlasciciel,
+                Odcinki = model.PrzebyteOdcinki.Select(p => new PrzebycieOdcinka
                 {
-                    Wlasciciel = model.Wlasciciel,
-                    Odcinki = model.PrzebyteOdcinki.Select(p => new PrzebycieOdcinka
-                    {
-                        Kolejnosc = p.Kolejnosc,
-                        Powrot = p.Powrot,
-                        OdcinekId = p.OdcinekId,
-                    })
-                };
-                var created = await _wycieczkaRepository.CreateWycieczka(wycieczka);
-                if (created is null)
-                {
-                    return BadRequest();
-                }
+                    Kolejnosc = p.Kolejnosc,
+                    Powrot = p.Powrot,
+                    OdcinekId = p.OdcinekId,
+                })
+            };
 
-                return Ok(created);
-            }
-            catch (ArgumentException exc)
+            var createdResult = await _wycieczkaRepository.CreateWycieczka(wycieczka);
+            if (createdResult.IsSuccesful)
             {
-                return BadRequest(exc.Message);
-                throw;
+                return Ok(createdResult.Value);
             }
+
+            return BadRequest(createdResult.Message);
         }
 
         [HttpPost("punktPrywatny")]
@@ -119,13 +109,13 @@ namespace KsiazeczkaPttk.API.Controllers
                 Wlasciciel = viewModel.Wlasciciel
             };
 
-            var created = await _wycieczkaRepository.CreatePunktPrywatny(punktTerenowy);
-            if (created is null)
+            var createdResult = await _wycieczkaRepository.CreatePunktPrywatny(punktTerenowy);
+            if (createdResult.IsSuccesful)
             {
-                return BadRequest();
+                return Ok(createdResult.Value);
             }
 
-            return Ok(created);
+            return BadRequest(createdResult.Message);
         }
 
         [HttpPost("odcinekPrywatny")]
@@ -143,20 +133,13 @@ namespace KsiazeczkaPttk.API.Controllers
                 Wlasciciel = viewModel.Wlasciciel
             };
 
-            try
+            var createdResult = await _wycieczkaRepository.CreateOdcinekPrywatny(odcinek);
+            if (createdResult.IsSuccesful)
             {
-                var created = await _wycieczkaRepository.CreateOdcinekPrywatny(odcinek);
-                if (created is null)
-                {
-                    return BadRequest();
-                }
-
-                return Ok(created);
-            } 
-            catch (ArgumentException exc)
-            {
-                return BadRequest(exc.Message);
+                return Ok(createdResult.Value);
             }
+
+            return BadRequest(createdResult.Message);
         }
 
     }

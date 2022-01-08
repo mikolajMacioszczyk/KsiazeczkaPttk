@@ -30,12 +30,12 @@ namespace KsiazeczkaPttk.DAL.Repositories
             return wycieczka;
         }
 
-        public async Task<Weryfikacja> CreateWeryfikacja(Weryfikacja weryfikacja)
+        public async Task<Result<Weryfikacja>> CreateWeryfikacja(Weryfikacja weryfikacja)
         {
             var wycieczka = await _context.Wycieczki.FirstOrDefaultAsync(w => w.Id == weryfikacja.Wycieczka);
             if (wycieczka is null)
             {
-                throw new ArgumentException("Nie znaleziono wycieczki");
+                return Result<Weryfikacja>.Error("Nie znaleziono wycieczki");
             }
             weryfikacja.DotyczacaWycieczka = wycieczka;
 
@@ -43,13 +43,13 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .FirstOrDefaultAsync(u => u.Login == weryfikacja.Przodownik);
             if (przodownik is null || przodownik.Rola != "Przodownik")
             {
-                throw new ArgumentException("Nie znaleziono przodownika");
+                return Result<Weryfikacja>.Error("Nie znaleziono przodownika");
             }
             weryfikacja.Uzytkownik = przodownik;
 
             await _context.Weryfikacje.AddAsync(weryfikacja);
             await _context.SaveChangesAsync();
-            return weryfikacja;
+            return Result<Weryfikacja>.Ok(weryfikacja);
         }
     }
 }

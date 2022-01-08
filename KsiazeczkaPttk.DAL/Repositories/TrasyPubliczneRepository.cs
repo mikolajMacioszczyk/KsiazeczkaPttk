@@ -22,55 +22,61 @@ namespace KsiazeczkaPttk.DAL.Repositories
             return await _context.GrupyGorskie.ToListAsync();
         }
 
-        public async Task<IEnumerable<PasmoGorskie>> GetAllPasmaGorskieForGrupa(int idGrupy)
+        public async Task<Result<IEnumerable<PasmoGorskie>>> GetAllPasmaGorskieForGrupa(int idGrupy)
         {
             var grupaFromDb = await _context.GrupyGorskie.FirstOrDefaultAsync(g => g.Id == idGrupy);
             if (grupaFromDb is null)
             {
-                return null;
+                return Result<IEnumerable<PasmoGorskie>>.Error("Nie znaleziono grupy górskiej");
             }
 
-            return await _context.PasmaGorskie
+            var pasma = await _context.PasmaGorskie
                 .Include(p => p.GrupaGorska)
                 .Where(p => p.Grupa == idGrupy)
                 .ToListAsync();
+
+            return Result<IEnumerable<PasmoGorskie>>.Ok(pasma);
         }
 
-        public async Task<IEnumerable<Odcinek>> GetAllOdcinkiForPasmo(int idPasma)
+        public async Task<Result<IEnumerable<Odcinek>>> GetAllOdcinkiForPasmo(int idPasma)
         {
             var pasmoFromDb = await _context.PasmaGorskie.FirstOrDefaultAsync(p => p.Id == idPasma);
             if (pasmoFromDb is null)
             {
-                return null;
+                return Result<IEnumerable<Odcinek>>.Error("Nie znaleziono Pasma Górskiego");
             }
 
-            return await _context.Odcinki
+            var odcinki = await _context.Odcinki
                 .Include(o => o.PasmoGorskie)
                 .Include(o => o.PunktTerenowyDo)
                 .Include(o => o.PunktTerenowyOd)
                 .Include(o => o.Ksiazeczka)
                 .Where(p => p.Pasmo == idPasma)
                 .ToListAsync();
+
+            return Result<IEnumerable<Odcinek>>.Ok(odcinki);
         }
 
-        public async Task<IEnumerable<Odcinek>> GetAllOdcinkiForPunktTerenowy(int idPunktuTerenowego)
+        public async Task<Result<IEnumerable<Odcinek>>> GetAllOdcinkiForPunktTerenowy(int idPunktuTerenowego)
         {
             var punktFromDb = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == idPunktuTerenowego);
             if (punktFromDb is null)
             {
-                return null;
+                return Result<IEnumerable<Odcinek>>.Error("Nie znaleziono Punktu Terenowego");
             }
 
-            return await _context.Odcinki
+            var odcinki = await _context.Odcinki
                 .Include(o => o.PasmoGorskie)
                 .Include(o => o.PunktTerenowyDo)
                 .Include(o => o.PunktTerenowyOd)
                 .Include(o => o.Ksiazeczka)
                 .Where(o => o.Od == idPunktuTerenowego || (o.Do == idPunktuTerenowego && o.PunktyPowrot > 0))
                 .ToListAsync();
+
+            return Result<IEnumerable<Odcinek>>.Ok(odcinki);
         }
 
-        public async Task<Odcinek> GetOdcinekPublicznyById(int odcinekId)
+        public async Task<Result<Odcinek>> GetOdcinekPublicznyById(int odcinekId)
         {
             var odcinek = await _context.Odcinki
                 .Include(o => o.PasmoGorskie)
@@ -80,29 +86,29 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             if (odcinek is null || !string.IsNullOrEmpty(odcinek.Wlasciciel))
             {
-                return null;
+                return Result<Odcinek>.Error("Nie znaleziono odcinka publicznego");
             }
-            return odcinek;
+            return Result<Odcinek>.Ok(odcinek);
         }
 
-        public async Task<Odcinek> CreateOdcinekPubliczny(Odcinek odcinek)
+        public async Task<Result<Odcinek>> CreateOdcinekPubliczny(Odcinek odcinek)
         {
             odcinek.PunktTerenowyOd = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Od);
             if (odcinek.PunktTerenowyOd is null)
             {
-                throw new ArgumentException("Nie znaleziono punktu początkowego");
+                return Result<Odcinek>.Error("Nie znaleziono punktu początkowego");
             }
 
             odcinek.PunktTerenowyDo = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Do);
             if (odcinek.PunktTerenowyDo is null)
             {
-                throw new ArgumentException("Nie znaleziono punktu końcowego");
+                return Result<Odcinek>.Error("Nie znaleziono punktu końcowego");
             }
 
             odcinek.PasmoGorskie = await _context.PasmaGorskie.FirstOrDefaultAsync(p => p.Id == odcinek.Pasmo);
             if (odcinek.PasmoGorskie is null)
             {
-                throw new ArgumentException("Nie znaleziono pasma górskiego");
+                return Result<Odcinek>.Error("Nie znaleziono pasma górskiego");
             }
 
             odcinek.Wersja = 1;
@@ -110,38 +116,38 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             await _context.Odcinki.AddAsync(odcinek);
             await _context.SaveChangesAsync();
-            return odcinek;
+            return Result<Odcinek>.Ok(odcinek);
         }
 
-        public async Task<Odcinek> EditOdcinekPubliczny(int odcinekId, Odcinek odcinek)
+        public async Task<Result<Odcinek>> EditOdcinekPubliczny(int odcinekId, Odcinek odcinek)
         {
             var odcinekFromDb = await _context.Odcinki.Include(o => o.Ksiazeczka)
                                         .FirstOrDefaultAsync(o => o.Id == odcinekId);
             if (odcinekFromDb is null)
             {
-                throw new ArgumentException("Nie znaleziono pasma górskiego");
+                return Result<Odcinek>.Error("Nie znaleziono odcinka");
             }
             if (odcinekFromDb.Ksiazeczka != null)
             {
-                return null;
+                return Result<Odcinek>.Error("Nie można modyfikować odcinka prywatnego");
             }
 
             odcinek.PunktTerenowyOd = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Od);
             if (odcinek.PunktTerenowyOd is null)
             {
-                throw new ArgumentException("Nie znaleziono punktu początkowego");
+                return Result<Odcinek>.Error("Nie znaleziono punktu początkowego");
             }
 
             odcinek.PunktTerenowyDo = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Do);
             if (odcinek.PunktTerenowyDo is null)
             {
-                throw new ArgumentException("Nie znaleziono punktu końcowego");
+                return Result<Odcinek>.Error("Nie znaleziono punktu końcowego");
             }
 
             odcinek.PasmoGorskie = await _context.PasmaGorskie.FirstOrDefaultAsync(p => p.Id == odcinek.Pasmo);
             if (odcinek.PasmoGorskie is null)
             {
-                throw new ArgumentException("Nie znaleziono pasma górskiego");
+                return Result<Odcinek>.Error("Nie znaleziono pasma górskiego");
             }
 
             odcinek.Wersja = odcinekFromDb.Wersja + 1;
@@ -149,7 +155,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             await _context.Odcinki.AddAsync(odcinek);
             await _context.SaveChangesAsync();
-            return odcinek;
+            return Result<Odcinek>.Ok(odcinek);
         }
 
         public async Task<bool> DeleteOdcinekPubliczny(int odcinekId)

@@ -13,15 +13,15 @@ namespace KsiazeczkaPttk.DAL.Interfaces
 
         Task<IEnumerable<PotwierdzenieTerenowePrzebytegoOdcinka>> GetPotwierdzeniaForOdcinek(PrzebycieOdcinka odcinek);
 
-        Task<Wycieczka> CreateWycieczka(Wycieczka wycieczka);
+        Task<Result<Wycieczka>> CreateWycieczka(Wycieczka wycieczka);
 
-        Task<Odcinek> CreateOdcinekPrywatny(Odcinek odcinek);
+        Task<Result<Odcinek>> CreateOdcinekPrywatny(Odcinek odcinek);
 
-        Task<PunktTerenowy> CreatePunktPrywatny(PunktTerenowy punkt);
+        Task<Result<PunktTerenowy>> CreatePunktPrywatny(PunktTerenowy punkt);
 
-        Task<PotwierdzenieTerenowe> AddPotwierdzenieToOdcinekWithOr(PotwierdzenieTerenowe potwierdzenie, int odcinekId);
+        Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinekWithOr(PotwierdzenieTerenowe potwierdzenie, int odcinekId);
 
-        Task<PotwierdzenieTerenowe> AddPotwierdzenieToOdcinekWithPhoto(PotwierdzenieTerenowe potwierdzenie, int odcinekId, IFormFile file);
+        Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinekWithPhoto(PotwierdzenieTerenowe potwierdzenie, int odcinekId, IFormFile file);
 
         Task<bool> DeletePotwierdzenia(int id);
     }

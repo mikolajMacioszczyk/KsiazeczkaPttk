@@ -52,20 +52,14 @@ namespace KsiazeczkaPttk.API.Controllers
                 PowodOdrzucenia = viewModel.PowodOdrzucenia
             };
 
-            try
+            var createdResult = await _weryfikacjaRepository.CreateWeryfikacja(weryfikacja);
+            if (createdResult.IsSuccesful)
             {
-                var created = await _weryfikacjaRepository.CreateWeryfikacja(weryfikacja);
-                if (created != null)
-                {
-                    // TODO: Should update points immediatly?
-                    return Ok(created);
-                }
+                // TODO: Should update points immediatly?
+                return Ok(createdResult.Value);
             }
-            catch (ArgumentException exc)
-            {
-                return BadRequest(exc.Message);
-            }
-            return BadRequest();
+            
+            return BadRequest(createdResult.Message);
         }
     }
 }

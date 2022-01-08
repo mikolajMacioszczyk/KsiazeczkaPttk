@@ -57,13 +57,13 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Wycieczka> CreateWycieczka(Wycieczka wycieczka)
+        public async Task<Result<Wycieczka>> CreateWycieczka(Wycieczka wycieczka)
         {
             wycieczka.Ksiazeczka = await _context.Ksiazeczki.FirstOrDefaultAsync(u => u.Wlasciciel == wycieczka.Wlasciciel);
 
             if (wycieczka.Ksiazeczka is null)
             {
-                throw new ArgumentException("Nie znaleziono książeczki");
+                return Result<Wycieczka>.Error("Nie znaleziono książeczki");
             }
 
             wycieczka.Status = Domain.Enums.StatusWycieczki.Planowana;
@@ -76,7 +76,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 var odcinekFromDb = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == przebycieOdcinka.OdcinekId);
                 if (odcinekFromDb is null)
                 {
-                    throw new ArgumentException("Nie znaleziono odcinka wycieczki");
+                    return Result<Wycieczka>.Error("Nie znaleziono odcinka wycieczki");
                 }
 
                 przebycieOdcinka.Odcinek = odcinekFromDb;
@@ -93,15 +93,15 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 przebycieOdcinka.DotyczacaWycieczka = null;
             }
 
-            return wycieczka;
+            return Result<Wycieczka>.Ok(wycieczka);
         }
 
-        public async Task<PunktTerenowy> CreatePunktPrywatny(PunktTerenowy punkt)
+        public async Task<Result<PunktTerenowy>> CreatePunktPrywatny(PunktTerenowy punkt)
         {
             var wlasciciel = await _context.Ksiazeczki.FirstOrDefaultAsync(k => k.Wlasciciel == punkt.Wlasciciel);
             if (wlasciciel is null)
             {
-                throw new ArgumentException("Nie znaleziono właściciela");
+                return Result<PunktTerenowy>.Error("Nie znaleziono właściciela");
             }
 
             punkt.Ksiazeczka = wlasciciel;
@@ -109,54 +109,59 @@ namespace KsiazeczkaPttk.DAL.Repositories
             var byName = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Nazwa == punkt.Nazwa);
             if (byName != null)
             {
-                throw new ArgumentException("Nazwa punktu terenowego nie jest unikalna");
+                return Result<PunktTerenowy>.Error("Nazwa punktu terenowego nie jest unikalna");
             }
 
             await _context.PunktyTerenowe.AddAsync(punkt);
             await _context.SaveChangesAsync();
-            return punkt;
+            return Result<PunktTerenowy>.Ok(punkt);
         }
 
-        public async Task<Odcinek> CreateOdcinekPrywatny(Odcinek odcinek)
+        public async Task<Result<Odcinek>> CreateOdcinekPrywatny(Odcinek odcinek)
         {
             odcinek.PunktTerenowyOd = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Od);
             if (odcinek.PunktTerenowyOd is null)
             {
-                throw new ArgumentException("Nie znaleziono punktu początkowego");
+                return Result<Odcinek>.Error("Nie znaleziono punktu początkowego");
             }
 
             odcinek.PunktTerenowyDo = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Do);
             if (odcinek.PunktTerenowyDo is null)
             {
-                throw new ArgumentException("Nie znaleziono punktu końcowego");
+                return Result<Odcinek>.Error("Nie znaleziono punktu końcowego");
             }
 
             odcinek.PasmoGorskie = await _context.PasmaGorskie.FirstOrDefaultAsync(p => p.Id == odcinek.Pasmo);
             if (odcinek.PasmoGorskie is null)
             {
-                throw new ArgumentException("Nie znaleziono pasma górskiego");
+                return Result<Odcinek>.Error("Nie znaleziono pasma górskiego");
             }
 
             odcinek.Ksiazeczka = await _context.Ksiazeczki.FirstOrDefaultAsync(k => k.Wlasciciel == odcinek.Wlasciciel);
             if (odcinek.Ksiazeczka is null)
             {
-                throw new ArgumentException("Nie znaleziono właściciela");
+                return Result<Odcinek>.Error("Nie znaleziono właściciela");
             }
             odcinek.Wersja = 1;
 
             await _context.Odcinki.AddAsync(odcinek);
             await _context.SaveChangesAsync();
-            return odcinek;
+            return Result<Odcinek>.Ok(odcinek);
         }
 
-        public async Task<PotwierdzenieTerenowe> AddPotwierdzenieToOdcinekWithOr(PotwierdzenieTerenowe potwierdzenie, int odcinekId)
+        public async Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinekWithOr(PotwierdzenieTerenowe potwierdzenie, int odcinekId)
         {
             var odcinekFromDb = await _context.PrzebyteOdcinki.FirstOrDefaultAsync(o => o.Id == odcinekId);
             var punktTerenowy = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == potwierdzenie.Punkt);
 
-            if (odcinekFromDb is null || punktTerenowy is null)
+            if (odcinekFromDb is null)
             {
-                return null;
+                return Result<PotwierdzenieTerenowe>.Error("Nie znaleziono Odcinka");
+            }
+
+            if (punktTerenowy is null)
+            {
+                return Result<PotwierdzenieTerenowe>.Error("Nie znaleziono Punktu terenowego");
             }
 
             potwierdzenie.Typ = Domain.Enums.TypPotwierdzenia.KodQr;
@@ -169,17 +174,25 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
             }
 
-            return null;
+            return Result<PotwierdzenieTerenowe>.Error("Nieprawidłowa lokalizacja kodu QR");
         }
 
-        public async Task<PotwierdzenieTerenowe> AddPotwierdzenieToOdcinekWithPhoto(PotwierdzenieTerenowe potwierdzenie, int odcinekId, IFormFile file)
+        public async Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinekWithPhoto(PotwierdzenieTerenowe potwierdzenie, int odcinekId, IFormFile file)
         {
             var odcinekFromDb = await _context.PrzebyteOdcinki.FirstOrDefaultAsync(o => o.Id == odcinekId);
             var punktTerenowy = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == potwierdzenie.Punkt);
 
-            if (odcinekFromDb is null || punktTerenowy is null || file is null)
+            if (odcinekFromDb is null)
             {
-                return null;
+                return Result<PotwierdzenieTerenowe>.Error("Nie znaleziono Odcinka");
+            }
+            if (punktTerenowy is null)
+            {
+                return Result<PotwierdzenieTerenowe>.Error("Nie znaleziono Punktu terenowego");
+            }
+            if (file is null)
+            {
+                return Result<PotwierdzenieTerenowe>.Error("Brak zdjęcia");
             }
 
             potwierdzenie.Typ = Domain.Enums.TypPotwierdzenia.Zdjecie;
@@ -188,7 +201,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
         }
 
-        private async Task<PotwierdzenieTerenowe> AddPotwierdzenieToOdcinek(PotwierdzenieTerenowe potwierdzenie, PrzebycieOdcinka przebycieOdcinka)
+        private async Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinek(PotwierdzenieTerenowe potwierdzenie, PrzebycieOdcinka przebycieOdcinka)
         {
             await _context.PotwierdzeniaTerenowe.AddAsync(potwierdzenie);
             await _context.SaveChangesAsync();
@@ -201,7 +214,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             };
             await _context.PotwierdzeniaTerenowePrzebytychOdcinkow.AddAsync(potwierdzeniePrzebytego);
             await _context.SaveChangesAsync();
-            return potwierdzenie;
+            return Result<PotwierdzenieTerenowe>.Ok(potwierdzenie);
         }
 
         public async Task<bool> DeletePotwierdzenia(int id)

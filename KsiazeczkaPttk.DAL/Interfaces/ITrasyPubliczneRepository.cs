@@ -8,17 +8,17 @@ namespace KsiazeczkaPttk.DAL.Interfaces
     {
         Task<IEnumerable<GrupaGorska>> GetAllGrupyGorskie();
 
-        Task<IEnumerable<PasmoGorskie>> GetAllPasmaGorskieForGrupa(int idGrupy);
+        Task<Result<IEnumerable<PasmoGorskie>>> GetAllPasmaGorskieForGrupa(int idGrupy);
 
-        Task<IEnumerable<Odcinek>> GetAllOdcinkiForPasmo(int idPasma);
+        Task<Result<IEnumerable<Odcinek>>> GetAllOdcinkiForPasmo(int idPasma);
 
-        Task<IEnumerable<Odcinek>> GetAllOdcinkiForPunktTerenowy(int idPunktuTerenowego);
+        Task<Result<IEnumerable<Odcinek>>> GetAllOdcinkiForPunktTerenowy(int idPunktuTerenowego);
 
-        Task<Odcinek> GetOdcinekPublicznyById(int odcinekId);
+        Task<Result<Odcinek>> GetOdcinekPublicznyById(int odcinekId);
 
-        Task<Odcinek> CreateOdcinekPubliczny(Odcinek odcinek);
+        Task<Result<Odcinek>> CreateOdcinekPubliczny(Odcinek odcinek);
 
-        Task<Odcinek> EditOdcinekPubliczny(int odcinekId, Odcinek odcinek);
+        Task<Result<Odcinek>> EditOdcinekPubliczny(int odcinekId, Odcinek odcinek);
 
         Task<bool> DeleteOdcinekPubliczny(int odcinekId);
     }
