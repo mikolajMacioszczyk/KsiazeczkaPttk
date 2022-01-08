@@ -10,6 +10,16 @@ namespace KsiazeczkaPttk.DAL.Services
     {
         private static readonly string FileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "images");
 
+        public FileStream GetPhoto(string fileName)
+        {
+            var discFileName = DiscFilePath(fileName);
+            if (File.Exists(discFileName))
+            {
+                return File.OpenRead(discFileName);
+            }
+            return null;
+        }
+
         public async Task<string> SaveFile(IFormFile file)
         {
             var fileName = $"{Guid.NewGuid()}_{file.FileName}";

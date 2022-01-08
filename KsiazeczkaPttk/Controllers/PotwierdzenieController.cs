@@ -12,10 +12,12 @@ namespace KsiazeczkaPttk.API.Controllers
     public class PotwierdzenieController : ControllerBase
     {
         private readonly IWycieczkaRepository _wycieczkaRepository;
+        private readonly IFileService _fileService;
 
-        public PotwierdzenieController(IWycieczkaRepository wycieczkaRepository)
+        public PotwierdzenieController(IWycieczkaRepository wycieczkaRepository, IFileService fileService)
         {
             _wycieczkaRepository = wycieczkaRepository;
+            _fileService = fileService;
         }
 
         [HttpGet("{idOdcinka}")]
@@ -28,6 +30,19 @@ namespace KsiazeczkaPttk.API.Controllers
             }
 
             return Ok(await _wycieczkaRepository.GetPotwierdzeniaForOdcinek(odcinek));
+        }
+
+        [HttpGet("photo/{fileName}")]
+        public ActionResult GetPotwierdzeniePhoto(string fileName)
+        {
+            var imageStream = _fileService.GetPhoto(fileName);
+            
+            if (imageStream is null)
+            {
+                return NotFound();
+            }
+
+            return File(imageStream, "image/jpeg");
         }
 
         [HttpPost("qrCode")]
