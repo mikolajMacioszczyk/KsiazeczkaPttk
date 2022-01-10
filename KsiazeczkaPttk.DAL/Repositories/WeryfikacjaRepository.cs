@@ -63,6 +63,11 @@ namespace KsiazeczkaPttk.DAL.Repositories
        
         public async Task<Result<Weryfikacja>> CreateWeryfikacja(Weryfikacja weryfikacja)
         {
+            if (!weryfikacja.Zaakceptiowana && string.IsNullOrWhiteSpace(weryfikacja.PowodOdrzucenia))
+            {
+                return Result<Weryfikacja>.Error("Nie wypełniono powodu odrzucenia");
+            }
+
             var wycieczka = await _context.Wycieczki
                 .Include(w => w.Odcinki)
                 .ThenInclude(o => o.Odcinek)
@@ -75,6 +80,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             wycieczka.Status = weryfikacja.Zaakceptiowana ? Domain.Enums.StatusWycieczki.Potwierdzona : Domain.Enums.StatusWycieczki.DoPoprawy;
             weryfikacja.DotyczacaWycieczka = wycieczka;
+            weryfikacja.Data = DateTime.Now;
 
             var przodownik = await _context.Uzytkownicy
                 .FirstOrDefaultAsync(u => u.Login == weryfikacja.Przodownik);

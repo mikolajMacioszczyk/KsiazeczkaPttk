@@ -21,7 +21,6 @@ namespace KsiazeczkaPttk.Domain.Models
         [ForeignKey("Punkt")]
         public PunktTerenowy PunktTerenowy { get; set; }
 
-        // TODO: Fix
         public DateTime Data { get; set; }
 
         public bool Administracyjny { get; set; }

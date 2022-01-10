@@ -371,7 +371,9 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Nazwa")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

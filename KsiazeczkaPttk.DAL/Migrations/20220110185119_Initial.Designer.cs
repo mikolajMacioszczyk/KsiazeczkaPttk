@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KsiazeczkaPttk.DAL.Migrations
 {
     [DbContext(typeof(KsiazeczkaContext))]
-    [Migration("20220110173115_Initial")]
+    [Migration("20220110185119_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -373,7 +373,9 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Nazwa")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

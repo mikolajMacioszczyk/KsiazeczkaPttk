@@ -189,7 +189,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Nazwa = table.Column<string>(type: "longtext", nullable: true)
+                    Nazwa = table.Column<string>(type: "varchar(250)", maxLength: 250, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Wlasciciel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
