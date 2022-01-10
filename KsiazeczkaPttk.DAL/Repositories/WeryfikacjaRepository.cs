@@ -24,7 +24,6 @@ namespace KsiazeczkaPttk.DAL.Repositories
             var wycieczka = await _context.Wycieczki
                 .Include(w => w.Odcinki)
                 .ThenInclude(o => o.Odcinek)
-                .Include(w => w.Odcinki)
                 .FirstOrDefaultAsync(w => w.Id == wycieczkaId);
 
             foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
@@ -33,6 +32,19 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             return wycieczka;
+        }
+
+        public async Task<IEnumerable<PotwierdzenieTerenowePrzebytegoOdcinka>> GetPotwierdzeniaForOdcinek(PrzebycieOdcinka odcinek)
+        {
+            if (odcinek is null)
+            {
+                return Array.Empty<PotwierdzenieTerenowePrzebytegoOdcinka>();
+            }
+
+            return await _context.PotwierdzeniaTerenowePrzebytychOdcinkow
+                .Include(p => p.PotwierdzenieTerenowe)
+                .Where(p => p.PrzebytyOdcinekId == odcinek.Id)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<WycieczkaPreview>> GetAllNieZweryfikowaneWycieczki()

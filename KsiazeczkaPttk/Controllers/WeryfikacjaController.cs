@@ -3,6 +3,7 @@ using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace KsiazeczkaPttk.API.Controllers
@@ -35,10 +36,24 @@ namespace KsiazeczkaPttk.API.Controllers
                 return NotFound();
             }
 
+            var weryfikowaneOdcinki = wycieczka.Odcinki.Select(async o => new WeryfikowanyPrzebytyOdcinek
+            {
+                Id = o.Id,
+                Kolejnosc = o.Kolejnosc,
+                Odcinek = o.Odcinek,
+                Powrot = o.Powrot,
+                Potwierdzenia = await _weryfikacjaRepository.GetPotwierdzeniaForOdcinek(o)
+            }).Select(t => t.Result);
+
             var model = new WeryfikowanaWycieczkaViewModel
             {
-                Wycieczka = wycieczka,
-                Punkty = _weryfikacjaService.GetSumPunkty(wycieczka)
+                Id = wycieczka.Id,
+                Nazwa = wycieczka.Nazwa,
+                Wlasciciel = wycieczka.Wlasciciel,
+                Status = wycieczka.Status.ToString(),
+                Ksiazeczka = wycieczka.Ksiazeczka,
+                Punkty = _weryfikacjaService.GetSumPunkty(wycieczka),
+                Odcinki = weryfikowaneOdcinki
             };
 
             return Ok(model);

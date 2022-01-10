@@ -10,6 +10,8 @@ namespace KsiazeczkaPttk.DAL.Interfaces
 
         Task<Wycieczka> GetWeryfikowanaWycieczkaById(int wycieczkaId);
 
+        Task<IEnumerable<PotwierdzenieTerenowePrzebytegoOdcinka>> GetPotwierdzeniaForOdcinek(PrzebycieOdcinka odcinek);
+
         Task<Result<Weryfikacja>> CreateWeryfikacja(Weryfikacja weryfikacja);
 
         Task<int> ApplyPoints(Weryfikacja weryfikacja);
