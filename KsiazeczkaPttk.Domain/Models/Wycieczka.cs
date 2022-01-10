@@ -9,6 +9,8 @@ namespace KsiazeczkaPttk.Domain.Models
     {
         public int Id { get; set; }
 
+        public string Nazwa { get; set; }
+
         [Required]
         [MaxLength(30)]
         public string Wlasciciel { get; set; }

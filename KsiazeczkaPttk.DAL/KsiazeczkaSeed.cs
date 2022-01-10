@@ -94,8 +94,8 @@ namespace KsiazeczkaPttk.DAL
 
             var wycieczki = new List<Wycieczka>
             {
-                new Wycieczka { Id = 1, Wlasciciel = ksiazeczki[0].Wlasciciel, Ksiazeczka = ksiazeczki[0], Status = Domain.Enums.StatusWycieczki.Dokumentowana },
-                new Wycieczka { Id = 2, Wlasciciel = ksiazeczki[0].Wlasciciel, Ksiazeczka = ksiazeczki[0], Status = Domain.Enums.StatusWycieczki.Planowana }
+                new Wycieczka { Id = 1, Nazwa = "Wycieczka 1",  Wlasciciel = ksiazeczki[0].Wlasciciel, Ksiazeczka = ksiazeczki[0], Status = Domain.Enums.StatusWycieczki.Weryfikowana },
+                new Wycieczka { Id = 2, Nazwa = "Wycieczka 2", Wlasciciel = ksiazeczki[0].Wlasciciel, Ksiazeczka = ksiazeczki[0], Status = Domain.Enums.StatusWycieczki.Planowana }
             };
 
             var przebyteOdcinki = new List<PrzebycieOdcinka>
@@ -123,12 +123,12 @@ namespace KsiazeczkaPttk.DAL
 
             var potwierdzeniaPrywatne = new List<PotwierdzenieTerenowe>
             {
-                new PotwierdzenieTerenowe { Id = 101, Url = "RusinowaPolanaUrl", Punkt = punktyTerenowePubliczne[0].Id, PunktTerenowy = punktyTerenowePubliczne[0], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
-                new PotwierdzenieTerenowe { Id = 102, Url = "DolinaPańczycaUrl", Punkt = punktyTerenowePrywatne[0].Id, PunktTerenowy = punktyTerenowePrywatne[0], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.Zdjecie },
-                new PotwierdzenieTerenowe { Id = 103, Url = "GęsiaSzyjaUrl", Punkt = punktyTerenowePubliczne[2].Id, PunktTerenowy = punktyTerenowePubliczne[2], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.Zdjecie },
-                new PotwierdzenieTerenowe { Id = 104, Url = "RówieńWaksmundzkaUrl", Punkt = punktyTerenowePubliczne[3].Id, PunktTerenowy = punktyTerenowePubliczne[3], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
-                new PotwierdzenieTerenowe { Id = 105, Url = "PsiaTrawkaUrl", Punkt = punktyTerenowePubliczne[4].Id, PunktTerenowy = punktyTerenowePubliczne[4], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
-                new PotwierdzenieTerenowe { Id = 106, Url = "SchroniskoPTTKnaHaliGąsienicowejUrl", Punkt = punktyTerenowePubliczne[9].Id, PunktTerenowy = punktyTerenowePubliczne[9], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
+                new PotwierdzenieTerenowe { Id = 101, Url = "RusinowaPolanaUrl", Data = new System.DateTime(2021, 7, 21, 12, 10, 0), Punkt = punktyTerenowePubliczne[0].Id, PunktTerenowy = punktyTerenowePubliczne[0], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
+                new PotwierdzenieTerenowe { Id = 102, Url = "DolinaPańczycaUrl", Data = new System.DateTime(2021, 7, 21, 14, 10, 0), Punkt = punktyTerenowePrywatne[0].Id, PunktTerenowy = punktyTerenowePrywatne[0], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.Zdjecie },
+                new PotwierdzenieTerenowe { Id = 103, Url = "GęsiaSzyjaUrl", Data = new System.DateTime(2021, 7, 21, 15, 50, 0), Punkt = punktyTerenowePubliczne[2].Id, PunktTerenowy = punktyTerenowePubliczne[2], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.Zdjecie },
+                new PotwierdzenieTerenowe { Id = 104, Url = "RówieńWaksmundzkaUrl", Data = new System.DateTime(2021, 7, 21, 17, 10, 0), Punkt = punktyTerenowePubliczne[3].Id, PunktTerenowy = punktyTerenowePubliczne[3], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
+                new PotwierdzenieTerenowe { Id = 105, Url = "PsiaTrawkaUrl", Data = new System.DateTime(2021, 7, 21, 17, 50, 0), Punkt = punktyTerenowePubliczne[4].Id, PunktTerenowy = punktyTerenowePubliczne[4], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
+                new PotwierdzenieTerenowe { Id = 106, Url = "SchroniskoPTTKnaHaliGąsienicowejUrl", Data = new System.DateTime(2021, 7, 21, 18, 45, 0), Punkt = punktyTerenowePubliczne[9].Id, PunktTerenowy = punktyTerenowePubliczne[9], Administracyjny = false, Typ = Domain.Enums.TypPotwierdzenia.KodQr },
             };
 
             var potwierdzeniaOdcinkow = new List<PotwierdzenieTerenowePrzebytegoOdcinka>

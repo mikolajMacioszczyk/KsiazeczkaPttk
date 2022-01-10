@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KsiazeczkaPttk.DAL.Migrations
 {
     [DbContext(typeof(KsiazeczkaContext))]
-    [Migration("20220108095709_Initial2")]
-    partial class Initial2
+    [Migration("20220110152347_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -179,6 +179,9 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     b.Property<bool>("Administracyjny")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("Punkt")
                         .HasColumnType("int");
 
@@ -327,7 +330,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     b.ToTable("Uzytkownicy");
                 });
 
-            modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.Weryfikacje", b =>
+            modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.Weryfikacja", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -365,6 +368,9 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<string>("Nazwa")
+                        .HasColumnType("longtext");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -544,7 +550,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     b.Navigation("RolaUzytkownika");
                 });
 
-            modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.Weryfikacje", b =>
+            modelBuilder.Entity("KsiazeczkaPttk.Domain.Models.Weryfikacja", b =>
                 {
                     b.HasOne("KsiazeczkaPttk.Domain.Models.Uzytkownik", "Uzytkownik")
                         .WithMany()

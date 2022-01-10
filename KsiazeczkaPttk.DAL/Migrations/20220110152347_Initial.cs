@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace KsiazeczkaPttk.DAL.Migrations
 {
-    public partial class Initial2 : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -188,6 +188,8 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Nazwa = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Wlasciciel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Status = table.Column<int>(type: "int", nullable: false)
@@ -261,6 +263,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     Url = table.Column<string>(type: "varchar(250)", maxLength: 250, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Punkt = table.Column<int>(type: "int", nullable: false),
+                    Data = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Administracyjny = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>

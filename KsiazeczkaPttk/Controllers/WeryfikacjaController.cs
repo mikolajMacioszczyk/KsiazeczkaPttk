@@ -3,8 +3,6 @@ using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace KsiazeczkaPttk.API.Controllers
@@ -20,6 +18,12 @@ namespace KsiazeczkaPttk.API.Controllers
         {
             _weryfikacjaRepository = weryfikacjaRepository;
             _weryfikacjaService = weryfikacjaService;
+        }
+
+        [HttpGet("wycieczki")]
+        public async Task<IActionResult> GetAllNiezweryfikowaneWycieczi()
+        {
+            return Ok(await _weryfikacjaRepository.GetAllNieZweryfikowaneWycieczki());
         }
 
         [HttpGet("wycieczka/{wycieczkaId}")]

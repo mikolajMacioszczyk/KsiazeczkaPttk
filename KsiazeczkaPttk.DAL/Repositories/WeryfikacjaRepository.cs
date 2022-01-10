@@ -2,6 +2,8 @@
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace KsiazeczkaPttk.DAL.Repositories
@@ -20,6 +22,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             var wycieczka = await _context.Wycieczki
                 .Include(w => w.Odcinki)
                 .ThenInclude(o => o.Odcinek)
+                .Include(w => w.Odcinki)
                 .FirstOrDefaultAsync(w => w.Id == wycieczkaId);
 
             foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
@@ -30,6 +33,32 @@ namespace KsiazeczkaPttk.DAL.Repositories
             return wycieczka;
         }
 
+        public async Task<IEnumerable<WycieczkaPreview>> GetAllNieZweryfikowaneWycieczki()
+        {
+            var wycieczki = await _context.Wycieczki
+                .Include(w => w.Odcinki)
+                .ThenInclude(o => o.Odcinek)
+                .ThenInclude(o => o.PasmoGorskie)
+                .Where(w => w.Status == Domain.Enums.StatusWycieczki.Weryfikowana)
+                .ToListAsync();
+
+            var result = new List<WycieczkaPreview>();
+            foreach (var wycieczka in wycieczki)
+            {
+                var (minDate, maxDate) = await GetDateRange(wycieczka);
+                result.Add(new WycieczkaPreview
+                {
+                    Id = wycieczka.Id,
+                    Nazwa = wycieczka.Nazwa,
+                    DataPoczatkowa = minDate,
+                    DataKoncowa = maxDate,
+                    Lokalizacja = GetLocalization(wycieczka)
+                });
+            }
+
+            return result;
+        }
+       
         public async Task<Result<Weryfikacja>> CreateWeryfikacja(Weryfikacja weryfikacja)
         {
             var wycieczka = await _context.Wycieczki.FirstOrDefaultAsync(w => w.Id == weryfikacja.Wycieczka);
@@ -37,6 +66,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             {
                 return Result<Weryfikacja>.Error("Nie znaleziono wycieczki");
             }
+            wycieczka.Status = weryfikacja.Zaakceptiowana ? Domain.Enums.StatusWycieczki.Potwierdzona : Domain.Enums.StatusWycieczki.DoPoprawy;
             weryfikacja.DotyczacaWycieczka = wycieczka;
 
             var przodownik = await _context.Uzytkownicy
@@ -50,6 +80,31 @@ namespace KsiazeczkaPttk.DAL.Repositories
             await _context.Weryfikacje.AddAsync(weryfikacja);
             await _context.SaveChangesAsync();
             return Result<Weryfikacja>.Ok(weryfikacja);
+        }
+
+        private async Task<(DateTime, DateTime)> GetDateRange(Wycieczka wycieczka)
+        {
+            var odcinkiId = wycieczka.Odcinki.Select(o => o.Id).ToList();
+
+            var datyPotwierdzen = await _context.PotwierdzeniaTerenowePrzebytychOdcinkow
+                .Include(p => p.PotwierdzenieTerenowe)
+                .Where(p => odcinkiId.Contains(p.PrzebytyOdcinekId))
+                .Select(p => p.PotwierdzenieTerenowe)
+                .Select(p => p.Data)
+                .ToListAsync();
+
+            return (datyPotwierdzen.Min(), datyPotwierdzen.Max());
+        }
+
+        private string GetLocalization(Wycieczka wycieczka)
+        {
+            var pasma = wycieczka.Odcinki
+                .Select(o => o.Odcinek)
+                .Select(o => o.PasmoGorskie)
+                .Distinct()
+                .Select(p => p.Nazwa);
+
+            return string.Join(", ", pasma);
         }
     }
 }

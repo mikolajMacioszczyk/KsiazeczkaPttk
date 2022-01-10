@@ -69,6 +69,7 @@ namespace KsiazeczkaPttk.API.Controllers
             var wycieczka = new Wycieczka
             {
                 Wlasciciel = model.Wlasciciel,
+                Nazwa = model.Nazwa,
                 Odcinki = model.PrzebyteOdcinki.Select(p => new PrzebycieOdcinka
                 {
                     Kolejnosc = p.Kolejnosc,

@@ -5,6 +5,7 @@ namespace KsiazeczkaPttk.API.ViewModels
     public class CreateWycieczkaViewModel
     {
         public string Wlasciciel { get; set; }
+        public string Nazwa { get; set; }
         public IEnumerable<PrzebycieOdcinkaViewModel> PrzebyteOdcinki { get; set; }
     }
 }
