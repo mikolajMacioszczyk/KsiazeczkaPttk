@@ -57,11 +57,7 @@ namespace KsiazeczkaPttk.API.Controllers
             };
 
             var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithOr(potwierdzenie, modelPotwierdzenia.OdcinekId);
-            if (result.IsSuccesful)
-            {
-                return Ok(result.Value);
-            }
-            return BadRequest(result.Message);
+            return UnWrapResultWithBadRequest(result);
         }
 
         [HttpPost("photo")]
@@ -76,11 +72,7 @@ namespace KsiazeczkaPttk.API.Controllers
             };
 
             var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithPhoto(potwierdzenie, modelPotwierdzenia.OdcinekId, modelPotwierdzenia.Image);
-            if (result.IsSuccesful)
-            {
-                return Ok(result.Value);
-            }
-            return BadRequest(result.Message);
+            return UnWrapResultWithBadRequest(result);
         }
 
         [HttpDelete("{idPotwierdzenia}")]
@@ -91,6 +83,15 @@ namespace KsiazeczkaPttk.API.Controllers
                 return Ok();
             }
             return NotFound();
+        }
+
+        private ActionResult UnWrapResultWithBadRequest<T>(Result<T> result)
+        {
+            if (result.IsSuccesful)
+            {
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Message);
         }
     }
 }

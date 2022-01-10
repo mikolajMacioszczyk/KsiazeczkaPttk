@@ -21,13 +21,8 @@ namespace KsiazeczkaPttk.API.Controllers
         public async Task<IActionResult> GetOdcinekPublicznyById(int idOdcinka)
         {
             var odcinekResult = await _trasyPubliczneRepository.GetOdcinekPublicznyById(idOdcinka);
-            
-            if (odcinekResult.IsSuccesful)
-            {
-                return Ok(odcinekResult.Value);
-            }
 
-            return NotFound();
+            return UnWrapResultWithNotFound(odcinekResult);
         }
 
         [HttpPost]
@@ -46,11 +41,7 @@ namespace KsiazeczkaPttk.API.Controllers
 
             
             var createdResult = await _trasyPubliczneRepository.CreateOdcinekPubliczny(odcinek);
-            if (createdResult.IsSuccesful)
-            {
-                return Ok(createdResult.Value);
-            }
-            return BadRequest(createdResult.Message);
+            return UnWrapResultWithBadRequest(createdResult);
         }
 
         [HttpPost("{idOdcinka}")]
@@ -67,11 +58,7 @@ namespace KsiazeczkaPttk.API.Controllers
             };
 
             var editedResult = await _trasyPubliczneRepository.EditOdcinekPubliczny(idOdcinka, odcinek);
-            if (editedResult.IsSuccesful)
-            {
-                return Ok(editedResult.Value);
-            }
-            return BadRequest(editedResult.Message);
+            return UnWrapResultWithBadRequest(editedResult);
         }
 
         [HttpDelete("{idOdcinka}")]
@@ -83,6 +70,24 @@ namespace KsiazeczkaPttk.API.Controllers
             }
 
             return BadRequest();
+        }
+
+        private ActionResult UnWrapResultWithBadRequest<T>(Result<T> result)
+        {
+            if (result.IsSuccesful)
+            {
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Message);
+        }
+
+        private ActionResult UnWrapResultWithNotFound<T>(Result<T> result)
+        {
+            if (result.IsSuccesful)
+            {
+                return Ok(result.Value);
+            }
+            return NotFound(result.Message);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace KsiazeczkaPttk.API.Controllers
         {
             var odcinkiResult = await _trasyPubliczneRepository.GetAllOdcinkiForPasmo(pasmoId);
             
-            return UnpackResult(odcinkiResult);
+            return UnWrapResultWithNotFound(odcinkiResult);
         }
 
         [HttpGet("adjacentOdcinki/{punktId}")]
@@ -60,19 +60,8 @@ namespace KsiazeczkaPttk.API.Controllers
         {
             var odcinkiResult = await _trasyPubliczneRepository.GetAllOdcinkiForPunktTerenowy(punktId);
 
-            return UnpackResult(odcinkiResult);
+            return UnWrapResultWithNotFound(odcinkiResult);
         }
-
-        private ActionResult UnpackResult<T>(Result<T> result)
-        {
-            if (result.IsSuccesful)
-            {
-                return Ok(result.Value);
-            }
-
-            return NotFound(result.Message);
-        }
-
 
         [HttpPost("wycieczka")]
         public async Task<ActionResult> CreateWycieczka([FromBody] CreateWycieczkaViewModel model)
@@ -89,12 +78,7 @@ namespace KsiazeczkaPttk.API.Controllers
             };
 
             var createdResult = await _wycieczkaRepository.CreateWycieczka(wycieczka);
-            if (createdResult.IsSuccesful)
-            {
-                return Ok(createdResult.Value);
-            }
-
-            return BadRequest(createdResult.Message);
+            return UnWrapResultWithBadRequest(createdResult);
         }
 
         [HttpPost("punktPrywatny")]
@@ -110,12 +94,7 @@ namespace KsiazeczkaPttk.API.Controllers
             };
 
             var createdResult = await _wycieczkaRepository.CreatePunktPrywatny(punktTerenowy);
-            if (createdResult.IsSuccesful)
-            {
-                return Ok(createdResult.Value);
-            }
-
-            return BadRequest(createdResult.Message);
+            return UnWrapResultWithBadRequest(createdResult);
         }
 
         [HttpPost("odcinekPrywatny")]
@@ -134,13 +113,25 @@ namespace KsiazeczkaPttk.API.Controllers
             };
 
             var createdResult = await _wycieczkaRepository.CreateOdcinekPrywatny(odcinek);
-            if (createdResult.IsSuccesful)
-            {
-                return Ok(createdResult.Value);
-            }
-
-            return BadRequest(createdResult.Message);
+            return UnWrapResultWithBadRequest(createdResult);
         }
 
+        private ActionResult UnWrapResultWithBadRequest<T>(Result<T> result)
+        {
+            if (result.IsSuccesful)
+            {
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Message);
+        }
+
+        private ActionResult UnWrapResultWithNotFound<T>(Result<T> result)
+        {
+            if (result.IsSuccesful)
+            {
+                return Ok(result.Value);
+            }
+            return NotFound(result.Message);
+        }
     }
 }
