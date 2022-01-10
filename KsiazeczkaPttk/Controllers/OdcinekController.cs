@@ -50,7 +50,7 @@ namespace KsiazeczkaPttk.API.Controllers
             return UnWrapResultWithBadRequest(createdResult);
         }
 
-        [HttpPost("{idOdcinka}")]
+        [HttpPut("{idOdcinka}")]
         public async Task<IActionResult> EditOdcinekPubliczny([FromRoute] int idOdcinka, [FromBody] EditOdcinekPublicznyViewModel viewModel)
         {
             var odcinek = new Odcinek()
