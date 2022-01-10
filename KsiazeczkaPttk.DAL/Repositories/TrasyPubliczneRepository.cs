@@ -76,6 +76,11 @@ namespace KsiazeczkaPttk.DAL.Repositories
             return Result<IEnumerable<Odcinek>>.Ok(odcinki);
         }
 
+        public async Task<IEnumerable<Odcinek>> GetAllOdcinkiPubliczne()
+        {
+            return await _context.Odcinki.Where(o => o.Ksiazeczka == null).ToListAsync();
+        }
+
         public async Task<Result<Odcinek>> GetOdcinekPublicznyById(int odcinekId)
         {
             var odcinek = await _context.Odcinki

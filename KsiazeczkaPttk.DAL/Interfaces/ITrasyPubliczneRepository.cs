@@ -14,6 +14,8 @@ namespace KsiazeczkaPttk.DAL.Interfaces
 
         Task<Result<IEnumerable<Odcinek>>> GetAllOdcinkiForPunktTerenowy(int idPunktuTerenowego);
 
+        Task<IEnumerable<Odcinek>> GetAllOdcinkiPubliczne();
+
         Task<Result<Odcinek>> GetOdcinekPublicznyById(int odcinekId);
 
         Task<Result<Odcinek>> CreateOdcinekPubliczny(Odcinek odcinek);

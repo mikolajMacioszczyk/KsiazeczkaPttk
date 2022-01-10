@@ -17,6 +17,12 @@ namespace KsiazeczkaPttk.API.Controllers
             _trasyPubliczneRepository = trasyPubliczneRepository;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllOdcinekPubliczny()
+        {
+            return Ok(await _trasyPubliczneRepository.GetAllOdcinkiPubliczne());
+        }
+
         [HttpGet("{idOdcinka}")]
         public async Task<IActionResult> GetOdcinekPublicznyById(int idOdcinka)
         {
