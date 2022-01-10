@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KsiazeczkaPttk.DAL.Migrations
 {
     [DbContext(typeof(KsiazeczkaContext))]
-    [Migration("20220110152347_Initial")]
+    [Migration("20220110173115_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,6 +69,9 @@ namespace KsiazeczkaPttk.DAL.Migrations
 
                     b.Property<bool>("Niepelnosprawnosc")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("Punkty")
+                        .HasColumnType("int");
 
                     b.HasKey("Wlasciciel");
 

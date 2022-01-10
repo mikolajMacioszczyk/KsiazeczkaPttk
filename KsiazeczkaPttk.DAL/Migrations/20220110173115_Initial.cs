@@ -113,7 +113,8 @@ namespace KsiazeczkaPttk.DAL.Migrations
                 {
                     Wlasciciel = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Niepelnosprawnosc = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Niepelnosprawnosc = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Punkty = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

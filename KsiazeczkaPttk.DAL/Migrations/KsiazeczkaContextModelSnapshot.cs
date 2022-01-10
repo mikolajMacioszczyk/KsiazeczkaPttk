@@ -68,6 +68,9 @@ namespace KsiazeczkaPttk.DAL.Migrations
                     b.Property<bool>("Niepelnosprawnosc")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<int>("Punkty")
+                        .HasColumnType("int");
+
                     b.HasKey("Wlasciciel");
 
                     b.ToTable("Ksiazeczki");

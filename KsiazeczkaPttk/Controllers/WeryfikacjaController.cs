@@ -59,8 +59,12 @@ namespace KsiazeczkaPttk.API.Controllers
             var createdResult = await _weryfikacjaRepository.CreateWeryfikacja(weryfikacja);
             if (createdResult.IsSuccesful)
             {
-                // TODO: Should update points immediatly?
-                return Ok(createdResult.Value);
+                var model = new WeryfikacjaViewModel { Weryfikacja = createdResult.Value };
+                if (createdResult.Value.Zaakceptiowana)
+                {
+                    model.PrzyznanePunkty = await _weryfikacjaRepository.ApplyPoints(model.Weryfikacja);
+                }
+                return Ok(model);
             }
             
             return BadRequest(createdResult.Message);

@@ -11,5 +11,7 @@ namespace KsiazeczkaPttk.DAL.Interfaces
         Task<Wycieczka> GetWeryfikowanaWycieczkaById(int wycieczkaId);
 
         Task<Result<Weryfikacja>> CreateWeryfikacja(Weryfikacja weryfikacja);
+
+        Task<int> ApplyPoints(Weryfikacja weryfikacja);
     }
 }

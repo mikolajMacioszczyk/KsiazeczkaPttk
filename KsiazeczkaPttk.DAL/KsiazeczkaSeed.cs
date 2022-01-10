@@ -31,7 +31,7 @@ namespace KsiazeczkaPttk.DAL
 
             var ksiazeczki = new List<Ksiazeczka>()
             {
-                new Ksiazeczka {Wlasciciel = uzytkownicy[0].Login, WlascicielKsiazeczki = uzytkownicy[0], Niepelnosprawnosc = false}
+                new Ksiazeczka {Wlasciciel = uzytkownicy[0].Login, Punkty = 5, WlascicielKsiazeczki = uzytkownicy[0], Niepelnosprawnosc = false}
             };
 
             var grupyGorskie = new List<GrupaGorska>()

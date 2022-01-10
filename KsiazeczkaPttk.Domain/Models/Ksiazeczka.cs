@@ -13,5 +13,7 @@ namespace KsiazeczkaPttk.Domain.Models
         public Uzytkownik WlascicielKsiazeczki { get; set; }
 
         public bool Niepelnosprawnosc { get; set; }
+
+        public int Punkty { get; set; }
     }
 }

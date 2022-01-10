@@ -203,6 +203,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
         private async Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinek(PotwierdzenieTerenowe potwierdzenie, PrzebycieOdcinka przebycieOdcinka)
         {
+            potwierdzenie.Data = DateTime.Now;
             await _context.PotwierdzeniaTerenowe.AddAsync(potwierdzenie);
             await _context.SaveChangesAsync();
             var potwierdzeniePrzebytego = new PotwierdzenieTerenowePrzebytegoOdcinka()

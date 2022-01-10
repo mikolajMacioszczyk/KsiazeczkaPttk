@@ -8,7 +8,10 @@ namespace KsiazeczkaPttk.DAL
     public class KsiazeczkaContext : DbContext
     {
         public KsiazeczkaContext(DbContextOptions<KsiazeczkaContext> options) : base(options)
-        {}
+        {
+            //Weryfikacje.RemoveRange(Weryfikacje.ToList());
+            //SaveChanges();
+        }
 
         public async Task Migrate()
         {
