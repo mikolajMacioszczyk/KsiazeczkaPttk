@@ -44,7 +44,7 @@ namespace KsiazeczkaPttk.API.Controllers
         {
             var pasmaResult = await _trasyPubliczneRepository.GetAllPasmaGorskieForGrupa(grupaId);
             
-            return UnpackResult(pasmaResult);
+            return UnWrapResultWithNotFound(pasmaResult);
         }
 
         [HttpGet("availableOdcinki/{pasmoId}")]
