@@ -1,5 +1,6 @@
 ﻿using KsiazeczkaPttk.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace KsiazeczkaPttk.DAL
 {
@@ -7,6 +8,11 @@ namespace KsiazeczkaPttk.DAL
     {
         public KsiazeczkaContext(DbContextOptions<KsiazeczkaContext> options) : base(options)
         {
+        }
+
+        public async Task Migrate()
+        {
+            await Database.MigrateAsync();
         }
 
         public DbSet<GotPttk> GotPttk { get; set; }
