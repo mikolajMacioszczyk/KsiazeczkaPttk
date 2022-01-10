@@ -32,7 +32,7 @@ namespace KsiazeczkaPttk.API.Controllers
             return Ok(await _wycieczkaRepository.GetPotwierdzeniaForOdcinek(odcinek));
         }
 
-        [HttpGet("photo/{fileName}")]
+        [HttpGet("zdjecie/{fileName}")]
         public ActionResult GetPotwierdzeniePhoto(string fileName)
         {
             var imageStream = _fileService.GetPhoto(fileName);
@@ -45,7 +45,7 @@ namespace KsiazeczkaPttk.API.Controllers
             return File(imageStream, "image/jpeg");
         }
 
-        [HttpPost("qrCode")]
+        [HttpPost("zKodem")]
         public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithQrCode([FromBody] CreatePotwierdzenieWithQrViewModel modelPotwierdzenia)
         {
             var potwierdzenie = new PotwierdzenieTerenowe
@@ -60,7 +60,7 @@ namespace KsiazeczkaPttk.API.Controllers
             return UnWrapResultWithBadRequest(result);
         }
 
-        [HttpPost("photo")]
+        [HttpPost("zeZdjeciem")]
         public async Task<ActionResult> CreatePotwierdzenieTerenoweForOdcinekWithPhoto([FromForm] CreatePotwierdzenieWithImageViewModel modelPotwierdzenia)
         {
             var potwierdzenie = new PotwierdzenieTerenowe

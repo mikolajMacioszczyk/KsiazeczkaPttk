@@ -33,13 +33,13 @@ namespace KsiazeczkaPttk.API.Controllers
             return Ok(wycieczka);
         }
 
-        [HttpGet("availableGrupyGorskie")]
+        [HttpGet("dostepneGrupyGorskie")]
         public async Task<ActionResult> GetAvailableGrupyGorskie()
         {
             return Ok(await _trasyPubliczneRepository.GetAllGrupyGorskie());
         }
 
-        [HttpGet("availablePasmaGorskie/{grupaId}")]
+        [HttpGet("dostepnePasmaGorskie/{grupaId}")]
         public async Task<ActionResult> GetAvailablePasmaGorskie([FromRoute] int grupaId)
         {
             var pasmaResult = await _trasyPubliczneRepository.GetAllPasmaGorskieForGrupa(grupaId);
@@ -47,7 +47,7 @@ namespace KsiazeczkaPttk.API.Controllers
             return UnWrapResultWithNotFound(pasmaResult);
         }
 
-        [HttpGet("availableOdcinki/{pasmoId}")]
+        [HttpGet("dostepneOdcinki/{pasmoId}")]
         public async Task<ActionResult> GetAvailableOdcinkiForPasmo([FromRoute] int pasmoId)
         {
             var odcinkiResult = await _trasyPubliczneRepository.GetAllOdcinkiForPasmo(pasmoId);
@@ -55,7 +55,7 @@ namespace KsiazeczkaPttk.API.Controllers
             return UnWrapResultWithNotFound(odcinkiResult);
         }
 
-        [HttpGet("adjacentOdcinki/{punktId}")]
+        [HttpGet("przylegajaceOdcinki/{punktId}")]
         public async Task<ActionResult> GetAvailableOdcinkiForPunktTerenowy([FromRoute] int punktId)
         {
             var odcinkiResult = await _trasyPubliczneRepository.GetAllOdcinkiForPunktTerenowy(punktId);
