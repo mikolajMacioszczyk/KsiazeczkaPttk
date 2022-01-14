@@ -1,0 +1,29 @@
+#docker-compose up --build
+#http://localhost:8080/swagger/index.html
+
+version: '3.8'
+services:
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_USER: 'root'
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'KsiazeczkaPTTK'
+
+  api:
+    build: 
+      context: .
+      dockerfile: KsiazeczkaPttk/Dockerfile
+    restart: always
+    ports:
+      - "44300:44300"
+      - "5000:5000"
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    links:
+      - mysql
+    depends_on:
+      - mysql
+    
