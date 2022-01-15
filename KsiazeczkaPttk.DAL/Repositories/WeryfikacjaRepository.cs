@@ -23,7 +23,14 @@ namespace KsiazeczkaPttk.DAL.Repositories
         {
             var wycieczka = await _context.Wycieczki
                 .Include(w => w.Odcinki)
-                .ThenInclude(o => o.Odcinek)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PunktTerenowyDo)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PunktTerenowyOd)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PasmoGorskie)
                 .FirstOrDefaultAsync(w => w.Id == wycieczkaId);
 
             foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
@@ -43,6 +50,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             return await _context.PotwierdzeniaTerenowePrzebytychOdcinkow
                 .Include(p => p.PotwierdzenieTerenowe)
+                    .ThenInclude(p => p.PunktTerenowy)
                 .Where(p => p.PrzebytyOdcinekId == odcinek.Id)
                 .ToListAsync();
         }

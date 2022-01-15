@@ -54,6 +54,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             return await _context.PotwierdzeniaTerenowePrzebytychOdcinkow
                 .Include(p => p.PotwierdzenieTerenowe)
+                .ThenInclude(p => p.PunktTerenowy)
                 .Where(p => p.PrzebytyOdcinekId == odcinek.Id)
                 .ToListAsync();
         }
