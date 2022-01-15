@@ -3,6 +3,7 @@ using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.DAL.Repositories;
 using KsiazeczkaPttk.DAL.Services;
 using KsiazeczkaPttk.Domain.Models;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,7 +13,7 @@ namespace KsiazeczkaPttk.Tests
     {
         private readonly IWeryfikacjaRepository _weryfikacjaRepository;
 
-        public WeryfikacjaRepositoryUnitTests()
+        public WeryfikacjaRepositoryUnitTests() : base(Guid.NewGuid().ToString())
         {
             _weryfikacjaRepository = new WeryfikacjaRepository(_context, new WeryfikacjaService());
         }
@@ -32,6 +33,7 @@ namespace KsiazeczkaPttk.Tests
 
             // assert
             Assert.False(result.IsSuccesful);
+            Assert.Null(result.Value);
             Assert.Equal("Nie wypełniono powodu odrzucenia", result.Message);
         }
 
@@ -52,6 +54,7 @@ namespace KsiazeczkaPttk.Tests
 
             // assert
             Assert.False(result.IsSuccesful);
+            Assert.Null(result.Value);
             Assert.Equal("Nie znaleziono wycieczki", result.Message);
         }
 
@@ -60,7 +63,6 @@ namespace KsiazeczkaPttk.Tests
         {
             // arrange
             await KsiazeczkaSeed.Seed(_context);
-
             var weryfikacja = new Weryfikacja()
             {
                 Zaakceptiowana = true,
@@ -73,6 +75,7 @@ namespace KsiazeczkaPttk.Tests
 
             // assert
             Assert.False(result.IsSuccesful);
+            Assert.Null(result.Value);
             Assert.Equal("Nie znaleziono przodownika", result.Message);
         }
 
@@ -94,6 +97,7 @@ namespace KsiazeczkaPttk.Tests
 
             // assert
             Assert.False(result.IsSuccesful);
+            Assert.Null(result.Value);
             Assert.Equal("Nie znaleziono przodownika", result.Message);
         }
 
@@ -115,6 +119,7 @@ namespace KsiazeczkaPttk.Tests
 
             // assert
             Assert.True(result.IsSuccesful);
+            Assert.NotNull(result.Value);
             Assert.Equal(Domain.Enums.StatusWycieczki.Potwierdzona, result.Value.DotyczacaWycieczka.Status);
         }
 
@@ -137,6 +142,7 @@ namespace KsiazeczkaPttk.Tests
 
             // assert
             Assert.True(result.IsSuccesful);
+            Assert.NotNull(result.Value);
             Assert.Equal(Domain.Enums.StatusWycieczki.DoPoprawy, result.Value.DotyczacaWycieczka.Status);
         }
     }
