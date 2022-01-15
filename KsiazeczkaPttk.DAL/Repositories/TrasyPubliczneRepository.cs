@@ -194,5 +194,12 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
             return false;
         }
+
+        public async Task<IEnumerable<PunktTerenowy>> GetAllPuntyTerenowe()
+        {
+            return await _context.PunktyTerenowe
+                .Include(p => p.Ksiazeczka)
+                .ToListAsync();
+        }
     }
 }

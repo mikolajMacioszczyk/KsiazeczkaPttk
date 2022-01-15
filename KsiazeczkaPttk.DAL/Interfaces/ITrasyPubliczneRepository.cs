@@ -23,5 +23,7 @@ namespace KsiazeczkaPttk.DAL.Interfaces
         Task<Result<Odcinek>> EditOdcinekPubliczny(int odcinekId, Odcinek odcinek);
 
         Task<bool> DeleteOdcinekPubliczny(int odcinekId);
+
+        Task<IEnumerable<PunktTerenowy>> GetAllPuntyTerenowe();
     }
 }
