@@ -78,7 +78,19 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
         public async Task<IEnumerable<Odcinek>> GetAllOdcinkiPubliczne()
         {
-            return await _context.Odcinki.Where(o => o.Ksiazeczka == null).ToListAsync();
+            var odcinki = await _context.Odcinki
+                .Include(o => o.PunktTerenowyDo)
+                .Include(o => o.PunktTerenowyOd)
+                .Include(o => o.Ksiazeczka)
+                .Include(o => o.PasmoGorskie)
+                .Where(o => o.Ksiazeczka == null).ToListAsync();
+
+            return odcinki.GroupBy(o => o.Nazwa)
+                .Select(g =>
+                {
+                    var maxVersion = g.Max(o => o.Wersja);
+                    return g.Where(o => o.Wersja == maxVersion).FirstOrDefault();
+                });
         }
 
         public async Task<Result<Odcinek>> GetOdcinekPublicznyById(int odcinekId)
@@ -87,6 +99,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .Include(o => o.PasmoGorskie)
                 .Include(o => o.PunktTerenowyDo)
                 .Include(o => o.PunktTerenowyOd)
+                .Include(o => o.Ksiazeczka)
                 .FirstOrDefaultAsync(o => o.Id == odcinekId);
 
             if (odcinek is null || !string.IsNullOrEmpty(odcinek.Wlasciciel))

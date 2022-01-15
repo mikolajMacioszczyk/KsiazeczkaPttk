@@ -27,6 +27,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .ThenInclude(k => k.WlascicielKsiazeczki)
                 .ThenInclude(u => u.RolaUzytkownika)
                 .Include(w => w.Odcinki)
+                .ThenInclude(o => o.Odcinek)
                 .FirstOrDefaultAsync(w => w.Id == id);
             
             foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
