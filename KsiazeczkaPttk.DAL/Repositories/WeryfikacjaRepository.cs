@@ -22,6 +22,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
         public async Task<Wycieczka> GetWeryfikowanaWycieczkaById(int wycieczkaId)
         {
             var wycieczka = await _context.Wycieczki
+                .Include(w => w.Ksiazeczka)
                 .Include(w => w.Odcinki)
                     .ThenInclude(o => o.Odcinek)
                         .ThenInclude(o => o.PunktTerenowyDo)
@@ -58,9 +59,16 @@ namespace KsiazeczkaPttk.DAL.Repositories
         public async Task<IEnumerable<WycieczkaPreview>> GetAllNieZweryfikowaneWycieczki()
         {
             var wycieczki = await _context.Wycieczki
+                .Include(w => w.Ksiazeczka)
                 .Include(w => w.Odcinki)
-                .ThenInclude(o => o.Odcinek)
-                .ThenInclude(o => o.PasmoGorskie)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PasmoGorskie)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PunktTerenowyOd)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PunktTerenowyDo)
                 .Where(w => w.Status == Domain.Enums.StatusWycieczki.Weryfikowana)
                 .ToListAsync();
 
@@ -68,10 +76,13 @@ namespace KsiazeczkaPttk.DAL.Repositories
             foreach (var wycieczka in wycieczki)
             {
                 var (minDate, maxDate) = await GetDateRange(wycieczka);
+                foreach (var przebycieOdcinka in wycieczka.Odcinki)
+                {
+                    przebycieOdcinka.DotyczacaWycieczka = null;
+                }
                 result.Add(new WycieczkaPreview
                 {
-                    Id = wycieczka.Id,
-                    Nazwa = wycieczka.Nazwa,
+                    Wycieczka = wycieczka,
                     DataPoczatkowa = minDate,
                     DataKoncowa = maxDate,
                     Lokalizacja = GetLocalization(wycieczka)

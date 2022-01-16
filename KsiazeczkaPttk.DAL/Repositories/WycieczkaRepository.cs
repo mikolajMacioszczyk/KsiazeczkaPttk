@@ -24,10 +24,17 @@ namespace KsiazeczkaPttk.DAL.Repositories
         {
             var wycieczka = await _context.Wycieczki
                 .Include(w => w.Ksiazeczka)
-                .ThenInclude(k => k.WlascicielKsiazeczki)
-                .ThenInclude(u => u.RolaUzytkownika)
+                    .ThenInclude(k => k.WlascicielKsiazeczki)
+                        .ThenInclude(u => u.RolaUzytkownika)
                 .Include(w => w.Odcinki)
-                .ThenInclude(o => o.Odcinek)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PunktTerenowyDo)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PunktTerenowyOd)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PasmoGorskie)
                 .FirstOrDefaultAsync(w => w.Id == id);
             
             foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())

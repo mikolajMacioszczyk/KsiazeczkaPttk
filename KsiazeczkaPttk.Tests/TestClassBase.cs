@@ -1,9 +1,10 @@
 ﻿using KsiazeczkaPttk.DAL;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace KsiazeczkaPttk.Tests
 {
-    public abstract class TestClassBase
+    public abstract class TestClassBase : IDisposable
     {
         protected readonly KsiazeczkaContext _context;
 
@@ -14,6 +15,11 @@ namespace KsiazeczkaPttk.Tests
             .Options;
 
             _context = new KsiazeczkaContext(options);
+        }
+
+        public void Dispose()
+        {
+            _context?.Dispose();
         }
     }
 }
