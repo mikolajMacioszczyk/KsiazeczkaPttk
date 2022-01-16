@@ -3,6 +3,7 @@ using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.DAL.Repositories;
 using KsiazeczkaPttk.DAL.Services;
 using KsiazeczkaPttk.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,6 +92,7 @@ namespace KsiazeczkaPttk.Tests
             Assert.Equal(nazwa, result.Value.Nazwa);
             Assert.Equal(Domain.Enums.StatusWycieczki.Planowana, result.Value.Status);
             Assert.True(odcinki.Select(o => (o.OdcinekId, o.Kolejnosc)).SequenceEqual(result.Value.Odcinki.Select(o => (o.OdcinekId, o.Kolejnosc))));
+            Assert.NotNull(await _context.Wycieczki.FirstOrDefaultAsync(w => w.Id == result.Value.Id));
         }
     }
 }

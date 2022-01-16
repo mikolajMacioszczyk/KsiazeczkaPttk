@@ -3,6 +3,7 @@ using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.DAL.Repositories;
 using KsiazeczkaPttk.DAL.Services;
 using KsiazeczkaPttk.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -121,6 +122,7 @@ namespace KsiazeczkaPttk.Tests
             Assert.True(result.IsSuccesful);
             Assert.NotNull(result.Value);
             Assert.Equal(Domain.Enums.StatusWycieczki.Potwierdzona, result.Value.DotyczacaWycieczka.Status);
+            Assert.NotNull(await _context.Weryfikacje.FirstOrDefaultAsync(w => w.Id == result.Value.Id));
         }
 
         [Fact]
@@ -144,6 +146,7 @@ namespace KsiazeczkaPttk.Tests
             Assert.True(result.IsSuccesful);
             Assert.NotNull(result.Value);
             Assert.Equal(Domain.Enums.StatusWycieczki.DoPoprawy, result.Value.DotyczacaWycieczka.Status);
+            Assert.NotNull(await _context.Weryfikacje.FirstOrDefaultAsync(w => w.Id == result.Value.Id));
         }
     }
 }
