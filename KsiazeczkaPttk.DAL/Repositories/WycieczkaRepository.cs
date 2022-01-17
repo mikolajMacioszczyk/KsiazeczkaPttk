@@ -104,7 +104,22 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             wycieczka.Status = Domain.Enums.StatusWycieczki.Planowana;
-            wycieczka.Odcinki = wycieczka.Odcinki.ToList();
+            var odcinki = wycieczka.Odcinki.OrderByDescending(o => o.Kolejnosc).ToList();
+            wycieczka.Odcinki = odcinki;
+
+            for (int i = 1; i < odcinki.Count - 1; i++)
+            {
+                var current = odcinki[i];
+                var previous = odcinki[i - 1];
+
+                var endOdPrevious = previous.Powrot ? previous.Odcinek.PunktTerenowyOd : previous.Odcinek.PunktTerenowyDo;
+                var startOfCurrent = current.Powrot ? current.Odcinek.PunktTerenowyDo : current.Odcinek.PunktTerenowyOd;
+
+                if (endOdPrevious.Id != startOfCurrent.Id)
+                {
+                    return Result<Wycieczka>.Error($"Odcinki o kolejności: {i} oraz {i + 1} nie są połączone");
+                }
+            }
 
             await _context.Wycieczki.AddAsync(wycieczka);
 

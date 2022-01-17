@@ -57,12 +57,12 @@ namespace KsiazeczkaPttk.DAL.Repositories
             return Result<IEnumerable<Odcinek>>.Ok(odcinki);
         }
 
-        public async Task<Result<IEnumerable<Odcinek>>> GetAllOdcinkiForPunktTerenowy(int idPunktuTerenowego)
+        public async Task<Result<IEnumerable<SasiedniOdcinek>>> GetAllOdcinkiForPunktTerenowy(int idPunktuTerenowego)
         {
             var punktFromDb = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == idPunktuTerenowego);
             if (punktFromDb is null)
             {
-                return Result<IEnumerable<Odcinek>>.Error("Nie znaleziono Punktu Terenowego");
+                return Result<IEnumerable<SasiedniOdcinek>>.Error("Nie znaleziono Punktu Terenowego");
             }
 
             var odcinki = await _context.Odcinki
@@ -73,7 +73,24 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .Where(o => o.Od == idPunktuTerenowego || (o.Do == idPunktuTerenowego && o.PunktyPowrot > 0))
                 .ToListAsync();
 
-            return Result<IEnumerable<Odcinek>>.Ok(odcinki);
+            var result = odcinki.Select(o => new SasiedniOdcinek {
+                Id = o.Id,
+                Do = o.Id,
+                Ksiazeczka = o.Ksiazeczka,
+                Nazwa = o.Nazwa,
+                Od = o.Od,
+                Pasmo = o.Pasmo,
+                PasmoGorskie = o.PasmoGorskie,
+                PunktTerenowyDo = o.PunktTerenowyDo,
+                PunktTerenowyOd = o.PunktTerenowyOd,
+                Punkty = o.Punkty,
+                PunktyPowrot = o.PunktyPowrot,
+                Wersja = o.Wersja,
+                Wlasciciel = o.Wlasciciel,
+                Powrot = o.Do == idPunktuTerenowego
+            });
+
+            return Result<IEnumerable<SasiedniOdcinek>>.Ok(result);
         }
 
         public async Task<IEnumerable<Odcinek>> GetAllOdcinkiPubliczne()

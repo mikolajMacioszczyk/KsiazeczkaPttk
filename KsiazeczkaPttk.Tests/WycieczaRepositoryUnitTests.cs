@@ -94,5 +94,7 @@ namespace KsiazeczkaPttk.Tests
             Assert.True(odcinki.Select(o => (o.OdcinekId, o.Kolejnosc)).SequenceEqual(result.Value.Odcinki.Select(o => (o.OdcinekId, o.Kolejnosc))));
             Assert.NotNull(await _context.Wycieczki.FirstOrDefaultAsync(w => w.Id == result.Value.Id));
         }
+
+        // Testy kolejności
     }
 }

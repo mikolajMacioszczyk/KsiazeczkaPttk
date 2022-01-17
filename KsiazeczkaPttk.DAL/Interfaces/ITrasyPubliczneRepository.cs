@@ -12,7 +12,7 @@ namespace KsiazeczkaPttk.DAL.Interfaces
 
         Task<Result<IEnumerable<Odcinek>>> GetAllOdcinkiForPasmo(int idPasma);
 
-        Task<Result<IEnumerable<Odcinek>>> GetAllOdcinkiForPunktTerenowy(int idPunktuTerenowego);
+        Task<Result<IEnumerable<SasiedniOdcinek>>> GetAllOdcinkiForPunktTerenowy(int idPunktuTerenowego);
 
         Task<IEnumerable<Odcinek>> GetAllOdcinkiPubliczne();
 
