@@ -20,6 +20,12 @@ namespace KsiazeczkaPttk.API.Controllers
             _trasyPubliczneRepository = trasyPubliczneRepository;
         }
 
+        [HttpGet("wycieczka")]
+        public async Task<ActionResult> GetAllWycieczka()
+        {
+            return Ok(await _wycieczkaRepository.GetAllWycieczka());
+        }
+
         [HttpGet("wycieczka/{id}")]
         public async Task<ActionResult> GetWycieczka(int id)
         {
