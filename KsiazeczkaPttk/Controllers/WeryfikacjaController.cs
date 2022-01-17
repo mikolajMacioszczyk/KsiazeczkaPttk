@@ -24,19 +24,26 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpGet("wycieczki")]
         public async Task<IActionResult> GetAllNiezweryfikowaneWycieczi()
         {
-            return Ok(await _weryfikacjaRepository.GetAllNieZweryfikowaneWycieczki());
+            var result = await _weryfikacjaRepository.GetAllNieZweryfikowaneWycieczki();
+
+            foreach (var preview in result)
+            {
+                preview.Punkty = _weryfikacjaService.GetSumPunkty(preview.Wycieczka);
+            }
+
+            return Ok(result);
         }
 
         [HttpGet("wycieczka/{wycieczkaId}")]
         public async Task<IActionResult> GetWycieczkaWeryfikacjaData(int wycieczkaId)
         {
-            var wycieczka = await _weryfikacjaRepository.GetWeryfikowanaWycieczkaById(wycieczkaId);
-            if (wycieczka is null)
+            var preview = await _weryfikacjaRepository.GetWeryfikowanaWycieczkaById(wycieczkaId);
+            if (preview is null)
             {
                 return NotFound();
             }
 
-            var weryfikowaneOdcinki = wycieczka.Odcinki.Select(async o => new WeryfikowanyPrzebytyOdcinek
+            var weryfikowaneOdcinki = preview.Wycieczka.Odcinki.Select(async o => new WeryfikowanyPrzebytyOdcinek
             {
                 Id = o.Id,
                 Kolejnosc = o.Kolejnosc,
@@ -47,13 +54,18 @@ namespace KsiazeczkaPttk.API.Controllers
 
             var model = new WeryfikowanaWycieczkaViewModel
             {
-                Id = wycieczka.Id,
-                Nazwa = wycieczka.Nazwa,
-                Wlasciciel = wycieczka.Wlasciciel,
-                Status = wycieczka.Status.ToString(),
-                Ksiazeczka = wycieczka.Ksiazeczka,
-                Punkty = _weryfikacjaService.GetSumPunkty(wycieczka),
-                Odcinki = weryfikowaneOdcinki
+                DataKoncowa = preview.DataKoncowa,
+                DataPoczatkowa = preview.DataPoczatkowa,
+                Lokalizacja = preview.Lokalizacja,
+                Punkty = _weryfikacjaService.GetSumPunkty(preview.Wycieczka),
+                Wycieczka = new WeryfikowanaWycieczka
+                {
+                    Id = preview.Wycieczka.Id,
+                    Ksiazeczka = preview.Wycieczka.Ksiazeczka,
+                    Nazwa = preview.Wycieczka.Nazwa,
+                    Odcinki = weryfikowaneOdcinki,
+                    Status = preview.Wycieczka.Status
+                }
             };
 
             return Ok(model);

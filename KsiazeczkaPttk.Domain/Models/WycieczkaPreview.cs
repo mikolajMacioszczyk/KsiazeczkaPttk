@@ -8,5 +8,6 @@ namespace KsiazeczkaPttk.Domain.Models
         public DateTime DataPoczatkowa { get; set; }
         public DateTime DataKoncowa { get; set; }
         public string Lokalizacja { get; set; }
+        public int Punkty { get; set; }
     }
 }

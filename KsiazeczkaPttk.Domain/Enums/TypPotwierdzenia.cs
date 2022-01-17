@@ -2,7 +2,7 @@
 {
     public enum TypPotwierdzenia
     {
-        Zdjecie,
-        KodQr
+        Zdjecie = 1,
+        KodQr = 2
     }
 }

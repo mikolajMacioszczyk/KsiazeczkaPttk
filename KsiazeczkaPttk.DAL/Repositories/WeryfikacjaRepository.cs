@@ -19,7 +19,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             _weryfikacjaService = weryfikacjaService;
         }
 
-        public async Task<Wycieczka> GetWeryfikowanaWycieczkaById(int wycieczkaId)
+        public async Task<WycieczkaPreview> GetWeryfikowanaWycieczkaById(int wycieczkaId)
         {
             var wycieczka = await _context.Wycieczki
                 .Include(w => w.Ksiazeczka)
@@ -39,7 +39,20 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 odcinek.DotyczacaWycieczka = null;
             }
 
-            return wycieczka;
+            var (minDate, maxDate) = await GetDateRange(wycieczka);
+            foreach (var przebycieOdcinka in wycieczka.Odcinki)
+            {
+                przebycieOdcinka.DotyczacaWycieczka = null;
+            }
+            var wycieczkaPreview = new WycieczkaPreview
+            {
+                Wycieczka = wycieczka,
+                DataPoczatkowa = minDate,
+                DataKoncowa = maxDate,
+                Lokalizacja = GetLocalization(wycieczka)
+            };
+
+            return wycieczkaPreview;
         }
 
         public async Task<IEnumerable<PotwierdzenieTerenowePrzebytegoOdcinka>> GetPotwierdzeniaForOdcinek(PrzebycieOdcinka odcinek)
