@@ -38,6 +38,13 @@ namespace KsiazeczkaPttk.DAL.Repositories
             return Result<IEnumerable<PasmoGorskie>>.Ok(pasma);
         }
 
+        public async Task<IEnumerable<PasmoGorskie>> GetAllPasmaGorskie()
+        {
+            return await _context.PasmaGorskie
+                .Include(p => p.GrupaGorska)
+                .ToListAsync();
+        }
+
         public async Task<Result<IEnumerable<Odcinek>>> GetAllOdcinkiForPasmo(int idPasma)
         {
             var pasmoFromDb = await _context.PasmaGorskie.FirstOrDefaultAsync(p => p.Id == idPasma);
@@ -92,6 +99,14 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             return Result<IEnumerable<SasiedniOdcinek>>.Ok(result);
         }
+
+        public async Task<IEnumerable<PunktTerenowy>> GetAllPunktyTerenowe()
+        {
+            return await _context.PunktyTerenowe
+                .Where(p => p.Ksiazeczka == null)
+                .ToListAsync();
+        }
+
 
         public async Task<IEnumerable<Odcinek>> GetAllOdcinkiPubliczne()
         {

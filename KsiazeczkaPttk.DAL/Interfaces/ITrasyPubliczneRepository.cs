@@ -10,9 +10,13 @@ namespace KsiazeczkaPttk.DAL.Interfaces
 
         Task<Result<IEnumerable<PasmoGorskie>>> GetAllPasmaGorskieForGrupa(int idGrupy);
 
+        Task<IEnumerable<PasmoGorskie>> GetAllPasmaGorskie();
+
         Task<Result<IEnumerable<Odcinek>>> GetAllOdcinkiForPasmo(int idPasma);
 
         Task<Result<IEnumerable<SasiedniOdcinek>>> GetAllOdcinkiForPunktTerenowy(int idPunktuTerenowego);
+
+        Task<IEnumerable<PunktTerenowy>> GetAllPunktyTerenowe();
 
         Task<IEnumerable<Odcinek>> GetAllOdcinkiPubliczne();
 

@@ -53,6 +53,12 @@ namespace KsiazeczkaPttk.API.Controllers
             return UnWrapResultWithNotFound(pasmaResult);
         }
 
+        [HttpGet("dostepnePasmaGorskie")]
+        public async Task<ActionResult> GetAvailablePasmaGorskie()
+        {
+            return Ok(await _trasyPubliczneRepository.GetAllPasmaGorskie());
+        }
+
         [HttpGet("dostepneOdcinki/{pasmoId}")]
         public async Task<ActionResult> GetAvailableOdcinkiForPasmo([FromRoute] int pasmoId)
         {
@@ -67,6 +73,12 @@ namespace KsiazeczkaPttk.API.Controllers
             var odcinkiResult = await _trasyPubliczneRepository.GetAllOdcinkiForPunktTerenowy(punktId);
 
             return UnWrapResultWithNotFound(odcinkiResult);
+        }
+
+        [HttpGet("dostepnePunkty")]
+        public async Task<ActionResult> GetAvailablePunktyTerenowe()
+        {
+            return Ok(await _trasyPubliczneRepository.GetAllPunktyTerenowe());
         }
 
         [HttpPost("wycieczka")]
