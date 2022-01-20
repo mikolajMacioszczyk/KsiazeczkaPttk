@@ -38,6 +38,8 @@ namespace KsiazeczkaPttk.API.Mapper
 
             CreateMap<WycieczkaPreview, WeryfikowanaWycieczkaViewModel>()
                 .ForMember(m => m.Wycieczka, opt => opt.ConvertUsing(new WycieczkaPreviewToWeryfikowanaWycieczkaConverter(), src => src));
+
+            CreateMap<Odcinek, SasiedniOdcinek>();
         }
     }
 }

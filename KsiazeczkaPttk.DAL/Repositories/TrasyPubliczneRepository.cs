@@ -1,7 +1,7 @@
-﻿using KsiazeczkaPttk.DAL.Interfaces;
+﻿using AutoMapper;
+using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,10 +11,12 @@ namespace KsiazeczkaPttk.DAL.Repositories
     public class TrasyPubliczneRepository : ITrasyPubliczneRepository
     {
         private readonly KsiazeczkaContext _context;
+        private readonly IMapper _mapper;
 
-        public TrasyPubliczneRepository(KsiazeczkaContext context)
+        public TrasyPubliczneRepository(KsiazeczkaContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<GrupaGorska>> GetAllGrupyGorskie()
@@ -53,13 +55,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 return Result<IEnumerable<Odcinek>>.Error("Nie znaleziono Pasma Górskiego");
             }
 
-            var odcinki = await _context.Odcinki
-                .Include(o => o.PasmoGorskie)
-                .Include(o => o.PunktTerenowyDo)
-                .Include(o => o.PunktTerenowyOd)
-                .Include(o => o.Ksiazeczka)
-                .Where(p => p.Pasmo == idPasma)
-                .ToListAsync();
+            var odcinki = await GetBaseOdcinekQueryable().Where(p => p.Pasmo == idPasma).ToListAsync();
 
             return Result<IEnumerable<Odcinek>>.Ok(odcinki);
         }
@@ -72,30 +68,15 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 return Result<IEnumerable<SasiedniOdcinek>>.Error("Nie znaleziono Punktu Terenowego");
             }
 
-            var odcinki = await _context.Odcinki
-                .Include(o => o.PasmoGorskie)
-                .Include(o => o.PunktTerenowyDo)
-                .Include(o => o.PunktTerenowyOd)
-                .Include(o => o.Ksiazeczka)
+            var odcinki = await GetBaseOdcinekQueryable()
                 .Where(o => o.Od == idPunktuTerenowego || (o.Do == idPunktuTerenowego && o.PunktyPowrot > 0))
                 .ToListAsync();
 
-            var result = odcinki.Select(o => new SasiedniOdcinek {
-                Id = o.Id,
-                Do = o.Id,
-                Ksiazeczka = o.Ksiazeczka,
-                Nazwa = o.Nazwa,
-                Od = o.Od,
-                Pasmo = o.Pasmo,
-                PasmoGorskie = o.PasmoGorskie,
-                PunktTerenowyDo = o.PunktTerenowyDo,
-                PunktTerenowyOd = o.PunktTerenowyOd,
-                Punkty = o.Punkty,
-                PunktyPowrot = o.PunktyPowrot,
-                Wersja = o.Wersja,
-                Wlasciciel = o.Wlasciciel,
-                Powrot = o.Do == idPunktuTerenowego
-            });
+            var result = odcinki.Select(o => {
+                    var sasiedni = _mapper.Map<SasiedniOdcinek>(o);
+                    sasiedni.Powrot = o.Do == idPunktuTerenowego;
+                    return sasiedni;
+                });
 
             return Result<IEnumerable<SasiedniOdcinek>>.Ok(result);
         }
@@ -110,28 +91,27 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
         public async Task<IEnumerable<Odcinek>> GetAllOdcinkiPubliczne()
         {
-            return await _context.Odcinki
-                .Include(o => o.PunktTerenowyDo)
-                .Include(o => o.PunktTerenowyOd)
-                .Include(o => o.Ksiazeczka)
-                .Include(o => o.PasmoGorskie)
-                .Where(o => o.Ksiazeczka == null && o.Aktywny).ToListAsync();
+            return await GetBaseOdcinekQueryable().Where(o => o.Ksiazeczka == null && o.Aktywny).ToListAsync();
         }
 
         public async Task<Result<Odcinek>> GetOdcinekPublicznyById(int odcinekId)
         {
-            var odcinek = await _context.Odcinki
-                .Include(o => o.PasmoGorskie)
-                .Include(o => o.PunktTerenowyDo)
-                .Include(o => o.PunktTerenowyOd)
-                .Include(o => o.Ksiazeczka)
-                .FirstOrDefaultAsync(o => o.Id == odcinekId);
+            var odcinek = await GetBaseOdcinekQueryable().FirstOrDefaultAsync(o => o.Id == odcinekId);
 
             if (odcinek is null || !string.IsNullOrEmpty(odcinek.Wlasciciel))
             {
                 return Result<Odcinek>.Error("Nie znaleziono odcinka publicznego");
             }
             return Result<Odcinek>.Ok(odcinek);
+        }
+
+        private IQueryable<Odcinek> GetBaseOdcinekQueryable()
+        {
+            return _context.Odcinki
+                .Include(o => o.PasmoGorskie)
+                .Include(o => o.PunktTerenowyDo)
+                .Include(o => o.PunktTerenowyOd)
+                .Include(o => o.Ksiazeczka);
         }
 
         public async Task<Result<Odcinek>> CreateOdcinekPubliczny(Odcinek odcinek)
