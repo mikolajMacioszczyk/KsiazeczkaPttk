@@ -1,8 +1,8 @@
-﻿using KsiazeczkaPttk.API.ViewModels;
+﻿using AutoMapper;
+using KsiazeczkaPttk.API.ViewModels;
 using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,11 +14,13 @@ namespace KsiazeczkaPttk.API.Controllers
     {
         private readonly IWeryfikacjaRepository _weryfikacjaRepository;
         private readonly IWeryfikacjaService _weryfikacjaService;
+        private readonly IMapper _mapper;
 
-        public WeryfikacjaController(IWeryfikacjaRepository weryfikacjaRepository, IWeryfikacjaService weryfikacjaService)
+        public WeryfikacjaController(IWeryfikacjaRepository weryfikacjaRepository, IWeryfikacjaService weryfikacjaService, IMapper mapper)
         {
             _weryfikacjaRepository = weryfikacjaRepository;
             _weryfikacjaService = weryfikacjaService;
+            _mapper = mapper;
         }
 
         [HttpGet("wycieczki")]
@@ -52,21 +54,9 @@ namespace KsiazeczkaPttk.API.Controllers
                 Potwierdzenia = await _weryfikacjaRepository.GetPotwierdzeniaForOdcinek(o)
             }).Select(t => t.Result);
 
-            var model = new WeryfikowanaWycieczkaViewModel
-            {
-                DataKoncowa = preview.DataKoncowa,
-                DataPoczatkowa = preview.DataPoczatkowa,
-                Lokalizacja = preview.Lokalizacja,
-                Punkty = _weryfikacjaService.GetSumPunkty(preview.Wycieczka),
-                Wycieczka = new WeryfikowanaWycieczka
-                {
-                    Id = preview.Wycieczka.Id,
-                    Ksiazeczka = preview.Wycieczka.Ksiazeczka,
-                    Nazwa = preview.Wycieczka.Nazwa,
-                    Odcinki = weryfikowaneOdcinki,
-                    Status = preview.Wycieczka.Status
-                }
-            };
+            var model = _mapper.Map<WeryfikowanaWycieczkaViewModel>(preview);
+            model.Wycieczka.Odcinki = weryfikowaneOdcinki;
+            model.Punkty = _weryfikacjaService.GetSumPunkty(preview.Wycieczka);
 
             return Ok(model);
         }
@@ -74,14 +64,7 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateWeryfikacja([FromBody] CreateWeryfikacjaViewModel viewModel)
         {
-            var weryfikacja = new Weryfikacja
-            {
-                Wycieczka = viewModel.Wycieczka,
-                Przodownik = viewModel.Przodownik,
-                Data = DateTime.Now,
-                Zaakceptiowana = viewModel.Zaakceptiowana,
-                PowodOdrzucenia = viewModel.PowodOdrzucenia
-            };
+            var weryfikacja = _mapper.Map<Weryfikacja>(viewModel);
 
             var createdResult = await _weryfikacjaRepository.CreateWeryfikacja(weryfikacja);
             if (createdResult.IsSuccesful)

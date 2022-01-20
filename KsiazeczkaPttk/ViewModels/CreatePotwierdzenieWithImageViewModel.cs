@@ -8,7 +8,6 @@ namespace KsiazeczkaPttk.API.ViewModels
         [Required]
         public IFormFile Image { get; set; }
 
-        [Required]
         [MaxLength(250)]
         public string Url { get; set; }
 

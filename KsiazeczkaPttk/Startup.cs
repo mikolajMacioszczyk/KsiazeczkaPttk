@@ -40,6 +40,8 @@ namespace KsiazeczkaPttk
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
             }));
 
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddScoped<ITrasyPubliczneRepository, TrasyPubliczneRepository>();
             services.AddScoped<IWycieczkaRepository, WycieczkaRepository>();
             services.AddScoped<IWeryfikacjaRepository, WeryfikacjaRepository>();

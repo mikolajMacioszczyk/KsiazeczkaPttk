@@ -1,4 +1,5 @@
-﻿using KsiazeczkaPttk.API.ViewModels;
+﻿using AutoMapper;
+using KsiazeczkaPttk.API.ViewModels;
 using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,12 @@ namespace KsiazeczkaPttk.API.Controllers
     public class OdcinekController : Controller
     {
         private readonly ITrasyPubliczneRepository _trasyPubliczneRepository;
+        private readonly IMapper _mapper;
 
-        public OdcinekController(ITrasyPubliczneRepository trasyPubliczneRepository)
+        public OdcinekController(ITrasyPubliczneRepository trasyPubliczneRepository, IMapper mapper)
         {
             _trasyPubliczneRepository = trasyPubliczneRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -40,17 +43,7 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOdcinekPubliczny([FromBody] CreateOdcinekPublicznyViewModel viewModel)
         {
-            var odcinek = new Odcinek()
-            {
-                Nazwa = viewModel.Nazwa,
-                Do = viewModel.Do,
-                Od = viewModel.Od,
-                Pasmo = viewModel.Pasmo,
-                Punkty = viewModel.Punkty,
-                PunktyPowrot = viewModel.PunktyPowrot,
-                Wersja = 1,
-            };
-
+            var odcinek = _mapper.Map<Odcinek>(viewModel);
             
             var createdResult = await _trasyPubliczneRepository.CreateOdcinekPubliczny(odcinek);
             return UnWrapResultWithBadRequest(createdResult);
@@ -59,15 +52,7 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpPut("{idOdcinka}")]
         public async Task<IActionResult> EditOdcinekPubliczny([FromRoute] int idOdcinka, [FromBody] EditOdcinekPublicznyViewModel viewModel)
         {
-            var odcinek = new Odcinek()
-            {
-                Nazwa = viewModel.Nazwa,
-                Do = viewModel.Do,
-                Od = viewModel.Od,
-                Pasmo = viewModel.Pasmo,
-                Punkty = viewModel.Punkty,
-                PunktyPowrot = viewModel.PunktyPowrot,
-            };
+            var odcinek = _mapper.Map<Odcinek>(viewModel);
 
             var editedResult = await _trasyPubliczneRepository.EditOdcinekPubliczny(idOdcinka, odcinek);
             return UnWrapResultWithBadRequest(editedResult);

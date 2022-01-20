@@ -1,8 +1,8 @@
-﻿using KsiazeczkaPttk.API.ViewModels;
+﻿using AutoMapper;
+using KsiazeczkaPttk.API.ViewModels;
 using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace KsiazeczkaPttk.API.Controllers
@@ -13,11 +13,13 @@ namespace KsiazeczkaPttk.API.Controllers
     {
         private readonly IWycieczkaRepository _wycieczkaRepository;
         private readonly ITrasyPubliczneRepository _trasyPubliczneRepository;
+        private readonly IMapper _mapper;
 
-        public WycieczkaController(IWycieczkaRepository wycieczkaRepository, ITrasyPubliczneRepository trasyPubliczneRepository)
+        public WycieczkaController(IWycieczkaRepository wycieczkaRepository, ITrasyPubliczneRepository trasyPubliczneRepository, IMapper mapper)
         {
             _wycieczkaRepository = wycieczkaRepository;
             _trasyPubliczneRepository = trasyPubliczneRepository;
+            _mapper = mapper;
         }
 
         [HttpGet("wycieczka")]
@@ -84,17 +86,7 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpPost("wycieczka")]
         public async Task<ActionResult> CreateWycieczka([FromBody] CreateWycieczkaViewModel model)
         {
-            var wycieczka = new Wycieczka
-            {
-                Wlasciciel = model.Wlasciciel,
-                Nazwa = model.Nazwa,
-                Odcinki = model.PrzebyteOdcinki.Select(p => new PrzebycieOdcinka
-                {
-                    Kolejnosc = p.Kolejnosc,
-                    Powrot = p.Powrot,
-                    OdcinekId = p.OdcinekId,
-                })
-            };
+            var wycieczka = _mapper.Map<Wycieczka>(model);
 
             var createdResult = await _wycieczkaRepository.CreateWycieczka(wycieczka);
             return UnWrapResultWithBadRequest(createdResult);
@@ -103,14 +95,7 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpPost("punktPrywatny")]
         public async Task<ActionResult> CreatePunktPrywatny([FromBody] CreatePunktTerenowyViewModel viewModel)
         {
-            var punktTerenowy = new PunktTerenowy
-            {
-                Nazwa = viewModel.Nazwa,
-                Lat = viewModel.Lat,
-                Lng = viewModel.Lng,
-                Mnpm = viewModel.Mnpm,
-                Wlasciciel = viewModel.Wlasciciel
-            };
+            var punktTerenowy = _mapper.Map<PunktTerenowy>(viewModel);
 
             var createdResult = await _wycieczkaRepository.CreatePunktPrywatny(punktTerenowy);
             return UnWrapResultWithBadRequest(createdResult);
@@ -119,17 +104,7 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpPost("odcinekPrywatny")]
         public async Task<ActionResult> CreateOdcinekPrywatny([FromBody] CreateOdcinekViewModel viewModel)
         {
-            var odcinek = new Odcinek
-            {
-                Nazwa = viewModel.Nazwa,
-                Wersja = 1,
-                Punkty = viewModel.Punkty,
-                PunktyPowrot = viewModel.PunktyPowrot,
-                Od = viewModel.Od,
-                Do = viewModel.Do,
-                Pasmo = viewModel.Pasmo,
-                Wlasciciel = viewModel.Wlasciciel
-            };
+            var odcinek = _mapper.Map<Odcinek>(viewModel);
 
             var createdResult = await _wycieczkaRepository.CreateOdcinekPrywatny(odcinek);
             return UnWrapResultWithBadRequest(createdResult);
