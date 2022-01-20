@@ -96,6 +96,11 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
         public async Task<Result<Wycieczka>> CreateWycieczka(Wycieczka wycieczka)
         {
+            if (!wycieczka.Odcinki?.Any() ?? true)
+            {
+                return Result<Wycieczka>.Error("Pusta wycieczka");
+            }
+
             wycieczka.Ksiazeczka = await _context.Ksiazeczki.FirstOrDefaultAsync(u => u.Wlasciciel == wycieczka.Wlasciciel);
 
             if (wycieczka.Ksiazeczka is null)
@@ -104,18 +109,33 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             wycieczka.Status = Domain.Enums.StatusWycieczki.Planowana;
-            var odcinki = wycieczka.Odcinki.OrderByDescending(o => o.Kolejnosc).ToList();
+            var odcinki = wycieczka.Odcinki.OrderBy(o => o.Kolejnosc).ToList();
             wycieczka.Odcinki = odcinki;
 
-            for (int i = 1; i < odcinki.Count - 1; i++)
+            if (odcinki.Where((o, index) => (o.Kolejnosc != index + 1)).Any())
+            {
+                return Result<Wycieczka>.Error("Niepoprawna kolejność odcinków");
+            }
+
+            for (int i = 1; i < odcinki.Count; i++)
             {
                 var current = odcinki[i];
                 var previous = odcinki[i - 1];
 
-                var endOdPrevious = previous.Powrot ? previous.Odcinek.PunktTerenowyOd : previous.Odcinek.PunktTerenowyDo;
-                var startOfCurrent = current.Powrot ? current.Odcinek.PunktTerenowyDo : current.Odcinek.PunktTerenowyOd;
+                if (previous.Odcinek is null)
+                {
+                    previous.Odcinek = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == previous.OdcinekId);
+                }
 
-                if (endOdPrevious.Id != startOfCurrent.Id)
+                if (current.Odcinek is null)
+                {
+                    current.Odcinek = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == current.OdcinekId);
+                }
+
+                var endOdPrevious = previous.Powrot ? previous.Odcinek.Od : previous.Odcinek.Do;
+                var startOfCurrent = current.Powrot ? current.Odcinek.Do : current.Odcinek.Od;
+
+                if (endOdPrevious != startOfCurrent)
                 {
                     return Result<Wycieczka>.Error($"Odcinki o kolejności: {i} oraz {i + 1} nie są połączone");
                 }
