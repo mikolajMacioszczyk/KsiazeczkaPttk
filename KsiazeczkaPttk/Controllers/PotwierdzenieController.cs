@@ -1,6 +1,7 @@
 ﻿using KsiazeczkaPttk.API.ViewModels;
 using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -13,11 +14,13 @@ namespace KsiazeczkaPttk.API.Controllers
     {
         private readonly IWycieczkaRepository _wycieczkaRepository;
         private readonly IFileService _fileService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public PotwierdzenieController(IWycieczkaRepository wycieczkaRepository, IFileService fileService)
+        public PotwierdzenieController(IWycieczkaRepository wycieczkaRepository, IFileService fileService, IWebHostEnvironment webHostEnvironment)
         {
             _wycieczkaRepository = wycieczkaRepository;
             _fileService = fileService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet("{idOdcinka}")]
@@ -35,7 +38,7 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpGet("zdjecie/{fileName}")]
         public ActionResult GetPotwierdzeniePhoto(string fileName)
         {
-            var imageStream = _fileService.GetPhoto(fileName);
+            var imageStream = _fileService.GetPhoto(fileName, _webHostEnvironment.ContentRootPath);
             
             if (imageStream is null)
             {
@@ -71,14 +74,14 @@ namespace KsiazeczkaPttk.API.Controllers
                 Administracyjny = false,
             };
 
-            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithPhoto(potwierdzenie, modelPotwierdzenia.OdcinekId, modelPotwierdzenia.Image);
+            var result = await _wycieczkaRepository.AddPotwierdzenieToOdcinekWithPhoto(potwierdzenie, modelPotwierdzenia.OdcinekId, modelPotwierdzenia.Image, _webHostEnvironment.ContentRootPath);
             return UnWrapResultWithBadRequest(result);
         }
 
         [HttpDelete("{idPotwierdzenia}")]
         public async Task<ActionResult> DeletePotwierdzenieOdcinka([FromRoute] int idPotwierdzenia)
         {
-            if (await _wycieczkaRepository.DeletePotwierdzenia(idPotwierdzenia))
+            if (await _wycieczkaRepository.DeletePotwierdzenia(idPotwierdzenia, _webHostEnvironment.ContentRootPath))
             {
                 return Ok();
             }

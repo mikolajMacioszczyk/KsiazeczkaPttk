@@ -229,7 +229,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             return Result<PotwierdzenieTerenowe>.Error("Nieprawidłowa lokalizacja kodu QR");
         }
 
-        public async Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinekWithPhoto(PotwierdzenieTerenowe potwierdzenie, int odcinekId, IFormFile file)
+        public async Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinekWithPhoto(PotwierdzenieTerenowe potwierdzenie, int odcinekId, IFormFile file, string rootFileName)
         {
             var odcinekFromDb = await _context.PrzebyteOdcinki.FirstOrDefaultAsync(o => o.Id == odcinekId);
             var punktTerenowy = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == potwierdzenie.Punkt);
@@ -248,7 +248,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             potwierdzenie.Typ = Domain.Enums.TypPotwierdzenia.Zdjecie;
-            potwierdzenie.Url = await _fileService.SaveFile(file);
+            potwierdzenie.Url = await _fileService.SaveFile(file, rootFileName);
 
             return await AddPotwierdzenieToOdcinek(potwierdzenie, odcinekFromDb);
         }
@@ -270,7 +270,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             return Result<PotwierdzenieTerenowe>.Ok(potwierdzenie);
         }
 
-        public async Task<bool> DeletePotwierdzenia(int id)
+        public async Task<bool> DeletePotwierdzenia(int id, string rootFileName)
         {
             var potwierdzenie = await _context.PotwierdzeniaTerenowe.FirstOrDefaultAsync(p => p.Id == id);
             if (potwierdzenie is null)
@@ -292,7 +292,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             if (potwierdzenie.Typ == Domain.Enums.TypPotwierdzenia.Zdjecie)
             {
-                _fileService.RemoveFile(potwierdzenie.Url);
+                _fileService.RemoveFile(potwierdzenie.Url, rootFileName);
             }
 
             return true;

@@ -23,8 +23,8 @@ namespace KsiazeczkaPttk.DAL.Interfaces
 
         Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinekWithOr(PotwierdzenieTerenowe potwierdzenie, int odcinekId);
 
-        Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinekWithPhoto(PotwierdzenieTerenowe potwierdzenie, int odcinekId, IFormFile file);
+        Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinekWithPhoto(PotwierdzenieTerenowe potwierdzenie, int odcinekId, IFormFile file, string rootFileName);
 
-        Task<bool> DeletePotwierdzenia(int id);
+        Task<bool> DeletePotwierdzenia(int id, string rootFileName);
     }
 }
