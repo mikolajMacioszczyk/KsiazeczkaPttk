@@ -18,6 +18,8 @@ namespace KsiazeczkaPttk.Domain.Models
 
         public int PunktyPowrot { get; set; }
 
+        public bool Aktywny { get; set; } = true;
+
         public int Od { get; set; }
 
         [ForeignKey("Od")]

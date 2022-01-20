@@ -82,6 +82,9 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<bool>("Aktywny")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<int>("Do")
                         .HasColumnType("int");
 

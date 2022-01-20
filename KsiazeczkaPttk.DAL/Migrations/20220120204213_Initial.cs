@@ -218,6 +218,7 @@ namespace KsiazeczkaPttk.DAL.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Punkty = table.Column<int>(type: "int", nullable: false),
                     PunktyPowrot = table.Column<int>(type: "int", nullable: false),
+                    Aktywny = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     Od = table.Column<int>(type: "int", nullable: false),
                     Do = table.Column<int>(type: "int", nullable: false),
                     Pasmo = table.Column<int>(type: "int", nullable: false),
