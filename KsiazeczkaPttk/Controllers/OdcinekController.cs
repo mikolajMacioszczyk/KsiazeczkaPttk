@@ -11,12 +11,10 @@ namespace KsiazeczkaPttk.API.Controllers
     public class OdcinekController : Controller
     {
         private readonly ITrasyPubliczneRepository _trasyPubliczneRepository;
-        private readonly ITrasyPubliczneRepository _publiczneRepository;
 
-        public OdcinekController(ITrasyPubliczneRepository trasyPubliczneRepository, ITrasyPubliczneRepository publiczneRepository)
+        public OdcinekController(ITrasyPubliczneRepository trasyPubliczneRepository)
         {
             _trasyPubliczneRepository = trasyPubliczneRepository;
-            _publiczneRepository = publiczneRepository;
         }
 
         [HttpGet]
@@ -36,7 +34,7 @@ namespace KsiazeczkaPttk.API.Controllers
         [HttpGet("punkty")]
         public async Task<ActionResult> GetAllPuntyTerenowe()
         {
-            return Ok(await _publiczneRepository.GetAllPuntyTerenowe());
+            return Ok(await _trasyPubliczneRepository.GetAllPuntyTerenowe());
         }
 
         [HttpPost]
