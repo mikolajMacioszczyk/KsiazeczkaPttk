@@ -35,6 +35,11 @@ namespace KsiazeczkaPttk
             services.AddDbContext<KsiazeczkaContext>(options =>
                 options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
 
+            services.AddCors(o => o.AddPolicy("DevelopmentCorsPolicy", builder =>
+            {
+                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            }));
+
             services.AddScoped<ITrasyPubliczneRepository, TrasyPubliczneRepository>();
             services.AddScoped<IWycieczkaRepository, WycieczkaRepository>();
             services.AddScoped<IWeryfikacjaRepository, WeryfikacjaRepository>();
@@ -56,6 +61,7 @@ namespace KsiazeczkaPttk
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "KsiazeczkaPttk v1"));
+                app.UseCors("DevelopmentCorsPolicy");
             }
 
             app.UseHttpsRedirection();
