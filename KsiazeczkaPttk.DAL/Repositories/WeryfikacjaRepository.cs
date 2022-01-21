@@ -21,38 +21,16 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
         public async Task<WycieczkaPreview> GetWeryfikowanaWycieczkaById(int wycieczkaId)
         {
-            var wycieczka = await _context.Wycieczki
-                .Include(w => w.Ksiazeczka)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PunktTerenowyDo)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PunktTerenowyOd)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PasmoGorskie)
+            var wycieczka = await GetBaseWycieczkaIQueryable()
                 .FirstOrDefaultAsync(w => w.Id == wycieczkaId);
 
-            foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
+            if (wycieczka is null)
             {
-                odcinek.DotyczacaWycieczka = null;
+                return null;
             }
+            PreventReferencesCycle(wycieczka);
 
-            var (minDate, maxDate) = await GetDateRange(wycieczka);
-            foreach (var przebycieOdcinka in wycieczka.Odcinki)
-            {
-                przebycieOdcinka.DotyczacaWycieczka = null;
-            }
-            var wycieczkaPreview = new WycieczkaPreview
-            {
-                Wycieczka = wycieczka,
-                DataPoczatkowa = minDate,
-                DataKoncowa = maxDate,
-                Lokalizacja = GetLocalization(wycieczka)
-            };
-
-            return wycieczkaPreview;
+            return await CreatePreview(wycieczka);
         }
 
         public async Task<IEnumerable<PotwierdzenieTerenowePrzebytegoOdcinka>> GetPotwierdzeniaForOdcinek(PrzebycieOdcinka odcinek)
@@ -71,40 +49,20 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
         public async Task<IEnumerable<WycieczkaPreview>> GetAllNieZweryfikowaneWycieczki()
         {
-            var wycieczki = await _context.Wycieczki
-                .Include(w => w.Ksiazeczka)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PasmoGorskie)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PunktTerenowyOd)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PunktTerenowyDo)
+            var wycieczki = await GetBaseWycieczkaIQueryable()
                 .Where(w => w.Status == Domain.Enums.StatusWycieczki.Weryfikowana)
                 .ToListAsync();
 
             var result = new List<WycieczkaPreview>();
             foreach (var wycieczka in wycieczki)
             {
-                var (minDate, maxDate) = await GetDateRange(wycieczka);
-                foreach (var przebycieOdcinka in wycieczka.Odcinki)
-                {
-                    przebycieOdcinka.DotyczacaWycieczka = null;
-                }
-                result.Add(new WycieczkaPreview
-                {
-                    Wycieczka = wycieczka,
-                    DataPoczatkowa = minDate,
-                    DataKoncowa = maxDate,
-                    Lokalizacja = GetLocalization(wycieczka)
-                });
+                PreventReferencesCycle(wycieczka);
+                result.Add(await CreatePreview(wycieczka));
             }
 
             return result;
         }
-       
+
         public async Task<Result<Weryfikacja>> CreateWeryfikacja(Weryfikacja weryfikacja)
         {
             if (!weryfikacja.Zaakceptiowana && string.IsNullOrWhiteSpace(weryfikacja.PowodOdrzucenia))
@@ -112,19 +70,11 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 return Result<Weryfikacja>.Error("Nie wypełniono powodu odrzucenia");
             }
 
-            var wycieczka = await _context.Wycieczki
-                .Include(w => w.Odcinki)
-                .ThenInclude(o => o.Odcinek)
-                .FirstOrDefaultAsync(w => w.Id == weryfikacja.Wycieczka);
-
+            var wycieczka = await GetWycieczkaByWeryfikacja(weryfikacja);
             if (wycieczka is null)
             {
                 return Result<Weryfikacja>.Error("Nie znaleziono wycieczki");
             }
-
-            wycieczka.Status = weryfikacja.Zaakceptiowana ? Domain.Enums.StatusWycieczki.Potwierdzona : Domain.Enums.StatusWycieczki.DoPoprawy;
-            weryfikacja.DotyczacaWycieczka = wycieczka;
-            weryfikacja.Data = DateTime.Now;
 
             var przodownik = await _context.Uzytkownicy
                 .FirstOrDefaultAsync(u => u.Login == weryfikacja.Przodownik);
@@ -132,16 +82,13 @@ namespace KsiazeczkaPttk.DAL.Repositories
             {
                 return Result<Weryfikacja>.Error("Nie znaleziono przodownika");
             }
-            weryfikacja.Uzytkownik = przodownik;
+
+            AddDefaultCreationValues(weryfikacja, wycieczka, przodownik);
 
             await _context.Weryfikacje.AddAsync(weryfikacja);
             await _context.SaveChangesAsync();
 
-            foreach (var odcinek in wycieczka.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
-            {
-                odcinek.DotyczacaWycieczka = null;
-            }
-
+            PreventReferencesCycle(wycieczka);
             return Result<Weryfikacja>.Ok(weryfikacja);
         }
 
@@ -153,7 +100,6 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             var ksiazeczka = await _context.Ksiazeczki.FirstOrDefaultAsync(k => k.Wlasciciel == weryfikacja.DotyczacaWycieczka.Wlasciciel);
-
             if (ksiazeczka is null)
             {
                 return 0;
@@ -197,6 +143,59 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 .Select(p => p.Nazwa);
 
             return string.Join(", ", pasma);
+        }
+
+        private async Task<WycieczkaPreview> CreatePreview(Wycieczka wycieczka)
+        {
+            var (minDate, maxDate) = await GetDateRange(wycieczka);
+
+            return new WycieczkaPreview
+            {
+                Wycieczka = wycieczka,
+                DataPoczatkowa = minDate,
+                DataKoncowa = maxDate,
+                Lokalizacja = GetLocalization(wycieczka)
+            };
+        }
+
+        private async Task<Wycieczka> GetWycieczkaByWeryfikacja(Weryfikacja weryfikacja)
+        {
+            return await _context.Wycieczki
+                .Include(w => w.Odcinki)
+                .ThenInclude(o => o.Odcinek)
+                .FirstOrDefaultAsync(w => w.Id == weryfikacja.Wycieczka);
+        }
+
+        private void AddDefaultCreationValues(Weryfikacja weryfikacja, Wycieczka wycieczka, Uzytkownik przodownik)
+        {
+            wycieczka.Status = weryfikacja.Zaakceptiowana ? Domain.Enums.StatusWycieczki.Potwierdzona : Domain.Enums.StatusWycieczki.DoPoprawy;
+            weryfikacja.DotyczacaWycieczka = wycieczka;
+            weryfikacja.Data = DateTime.Now;
+            weryfikacja.Uzytkownik = przodownik;
+        }
+
+
+        private IQueryable<Wycieczka> GetBaseWycieczkaIQueryable()
+        {
+            return _context.Wycieczki
+                .Include(w => w.Ksiazeczka)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PasmoGorskie)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PunktTerenowyOd)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PunktTerenowyDo);
+        }
+
+        private void PreventReferencesCycle(Wycieczka wycieczka)
+        {
+            foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
+            {
+                odcinek.DotyczacaWycieczka = null;
+            }
         }
     }
 }
