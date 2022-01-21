@@ -196,10 +196,14 @@ namespace KsiazeczkaPttk.DAL.Repositories
             if (canRemove)
             {
                 _context.Odcinki.Remove(odcinekFromDb);
-                await _context.SaveChangesAsync();
-                return true;
             }
-            return false;
+            else
+            {
+                odcinekFromDb.Aktywny = false;
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<IEnumerable<PunktTerenowy>> GetAllPuntyTerenowe()
