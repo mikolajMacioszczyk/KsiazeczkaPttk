@@ -22,52 +22,18 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
         public async Task<Wycieczka> GetById(int id)
         {
-            var wycieczka = await _context.Wycieczki
-                .Include(w => w.Ksiazeczka)
-                    .ThenInclude(k => k.WlascicielKsiazeczki)
-                        .ThenInclude(u => u.RolaUzytkownika)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PunktTerenowyDo)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PunktTerenowyOd)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PasmoGorskie)
-                .FirstOrDefaultAsync(w => w.Id == id);
-            
-            foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
-            {
-                odcinek.DotyczacaWycieczka = null;
-            }
-
+            var wycieczka = await GetBaseWycieczkaIQueryable().FirstOrDefaultAsync(w => w.Id == id);
+            PreventCycleReferences(wycieczka);
             return wycieczka;
         }
 
         public async Task<IEnumerable<Wycieczka>> GetAllWycieczka()
         {
-            var wycieczki = await _context.Wycieczki
-                .Include(w => w.Ksiazeczka)
-                    .ThenInclude(k => k.WlascicielKsiazeczki)
-                        .ThenInclude(u => u.RolaUzytkownika)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PunktTerenowyDo)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PunktTerenowyOd)
-                .Include(w => w.Odcinki)
-                    .ThenInclude(o => o.Odcinek)
-                        .ThenInclude(o => o.PasmoGorskie)
-                .ToListAsync();
+            var wycieczki = await GetBaseWycieczkaIQueryable().ToListAsync();
 
             foreach (var wycieczka in wycieczki)
             {
-                foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
-                {
-                    odcinek.DotyczacaWycieczka = null;
-                }
+                PreventCycleReferences(wycieczka);
             }
 
             return wycieczki;
@@ -112,59 +78,20 @@ namespace KsiazeczkaPttk.DAL.Repositories
             var odcinki = wycieczka.Odcinki.OrderBy(o => o.Kolejnosc).ToList();
             wycieczka.Odcinki = odcinki;
 
-            if (odcinki.Where((o, index) => (o.Kolejnosc != index + 1)).Any())
+            var orderResult = await ValidateOdcinkiOrder(odcinki);
+            if (!orderResult.Item1)
             {
-                return Result<Wycieczka>.Error("Niepoprawna kolejność odcinków");
-            }
-
-            for (int i = 1; i < odcinki.Count; i++)
-            {
-                var current = odcinki[i];
-                var previous = odcinki[i - 1];
-
-                if (previous.Odcinek is null)
-                {
-                    previous.Odcinek = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == previous.OdcinekId);
-                }
-
-                if (current.Odcinek is null)
-                {
-                    current.Odcinek = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == current.OdcinekId);
-                }
-
-                var endOdPrevious = previous.Powrot ? previous.Odcinek.Od : previous.Odcinek.Do;
-                var startOfCurrent = current.Powrot ? current.Odcinek.Do : current.Odcinek.Od;
-
-                if (endOdPrevious != startOfCurrent)
-                {
-                    return Result<Wycieczka>.Error($"Odcinki o kolejności: {i} oraz {i + 1} nie są połączone");
-                }
+                return Result<Wycieczka>.Error(orderResult.Item2);
             }
 
             await _context.Wycieczki.AddAsync(wycieczka);
-
-            foreach (var przebycieOdcinka in wycieczka.Odcinki)
+            if (!(await AssignOdcinkiToWycieczka(wycieczka)))
             {
-                var odcinekFromDb = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == przebycieOdcinka.OdcinekId);
-                if (odcinekFromDb is null)
-                {
-                    return Result<Wycieczka>.Error("Nie znaleziono odcinka wycieczki");
-                }
-
-                przebycieOdcinka.Odcinek = odcinekFromDb;
-                przebycieOdcinka.DotyczacaWycieczka = wycieczka;
-                przebycieOdcinka.Wycieczka = wycieczka.Id;
-
-                await _context.PrzebyteOdcinki.AddAsync(przebycieOdcinka);
+                return Result<Wycieczka>.Error("Nie znaleziono odcinka wycieczki");
             }
-
             await _context.SaveChangesAsync();
 
-            foreach (var przebycieOdcinka in wycieczka.Odcinki)
-            {
-                przebycieOdcinka.DotyczacaWycieczka = null;
-            }
-
+            PreventCycleReferences(wycieczka);
             return Result<Wycieczka>.Ok(wycieczka);
         }
 
@@ -178,8 +105,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
             punkt.Ksiazeczka = wlasciciel;
 
-            var byName = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Nazwa == punkt.Nazwa);
-            if (byName != null)
+            if (await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Nazwa == punkt.Nazwa) != null)
             {
                 return Result<PunktTerenowy>.Error("Nazwa punktu terenowego nie jest unikalna");
             }
@@ -191,34 +117,45 @@ namespace KsiazeczkaPttk.DAL.Repositories
 
         public async Task<Result<Odcinek>> CreateOdcinekPrywatny(Odcinek odcinek)
         {
-            odcinek.PunktTerenowyOd = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Od);
-            if (odcinek.PunktTerenowyOd is null)
+            var validityResult = await CheckNewOdcinekValidity(odcinek);
+            if (!validityResult.Item1)
             {
-                return Result<Odcinek>.Error("Nie znaleziono punktu początkowego");
+                return Result<Odcinek>.Error(validityResult.Item2);
             }
 
-            odcinek.PunktTerenowyDo = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Do);
-            if (odcinek.PunktTerenowyDo is null)
-            {
-                return Result<Odcinek>.Error("Nie znaleziono punktu końcowego");
-            }
-
-            odcinek.PasmoGorskie = await _context.PasmaGorskie.FirstOrDefaultAsync(p => p.Id == odcinek.Pasmo);
-            if (odcinek.PasmoGorskie is null)
-            {
-                return Result<Odcinek>.Error("Nie znaleziono pasma górskiego");
-            }
-
-            odcinek.Ksiazeczka = await _context.Ksiazeczki.FirstOrDefaultAsync(k => k.Wlasciciel == odcinek.Wlasciciel);
-            if (odcinek.Ksiazeczka is null)
-            {
-                return Result<Odcinek>.Error("Nie znaleziono właściciela");
-            }
             odcinek.Wersja = 1;
 
             await _context.Odcinki.AddAsync(odcinek);
             await _context.SaveChangesAsync();
             return Result<Odcinek>.Ok(odcinek);
+        }
+
+        private async Task<(bool, string)> CheckNewOdcinekValidity(Odcinek odcinek)
+        {
+            odcinek.PunktTerenowyOd = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Od);
+            if (odcinek.PunktTerenowyOd is null)
+            {
+                return (false, "Nie znaleziono punktu początkowego");
+            }
+
+            odcinek.PunktTerenowyDo = await _context.PunktyTerenowe.FirstOrDefaultAsync(p => p.Id == odcinek.Do);
+            if (odcinek.PunktTerenowyDo is null)
+            {
+                return (false, "Nie znaleziono punktu końcowego");
+            }
+
+            odcinek.PasmoGorskie = await _context.PasmaGorskie.FirstOrDefaultAsync(p => p.Id == odcinek.Pasmo);
+            if (odcinek.PasmoGorskie is null)
+            {
+                return (false, "Nie znaleziono pasma górskiego");
+            }
+
+            odcinek.Ksiazeczka = await _context.Ksiazeczki.FirstOrDefaultAsync(k => k.Wlasciciel == odcinek.Wlasciciel);
+            if (odcinek.Ksiazeczka is null)
+            {
+                return (false, "Nie znaleziono właściciela");
+            }
+            return (true, string.Empty);
         }
 
         public async Task<Result<PotwierdzenieTerenowe>> AddPotwierdzenieToOdcinekWithOr(PotwierdzenieTerenowe potwierdzenie, int odcinekId)
@@ -298,14 +235,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 return false;
             }
 
-            var potwierdzeniaOdcinkow = await _context.PotwierdzeniaTerenowePrzebytychOdcinkow
-                .Where(p => p.Potwierdzenie == id).ToListAsync();
-
-            foreach (var potwierdzenieOdcinka in potwierdzeniaOdcinkow)
-            {
-                _context.PotwierdzeniaTerenowePrzebytychOdcinkow.Remove(potwierdzenieOdcinka);
-            }
-            await _context.SaveChangesAsync();
+            await RemoveConnectedPotwierdzeniaOdcinkow(id);
 
             _context.PotwierdzeniaTerenowe.Remove(potwierdzenie);
             await _context.SaveChangesAsync();
@@ -316,6 +246,94 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             return true;
+        }
+
+        private async Task<bool> AssignOdcinkiToWycieczka(Wycieczka wycieczka)
+        {
+            foreach (var przebycieOdcinka in wycieczka.Odcinki)
+            {
+                var odcinekFromDb = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == przebycieOdcinka.OdcinekId);
+                if (odcinekFromDb is null)
+                {
+                    return false;
+                }
+
+                przebycieOdcinka.Odcinek = odcinekFromDb;
+                przebycieOdcinka.DotyczacaWycieczka = wycieczka;
+                przebycieOdcinka.Wycieczka = wycieczka.Id;
+
+                await _context.PrzebyteOdcinki.AddAsync(przebycieOdcinka);
+            }
+            return true;
+        }
+
+        private async Task<(bool, string)> ValidateOdcinkiOrder(List<PrzebycieOdcinka> odcinki)
+        {
+            if (odcinki.Where((o, index) => (o.Kolejnosc != index + 1)).Any())
+            {
+                return (false, "Niepoprawna kolejność odcinków");
+            }
+
+            for (int i = 1; i < odcinki.Count; i++)
+            {
+                var current = odcinki[i];
+                var previous = odcinki[i - 1];
+
+                if (previous.Odcinek is null)
+                {
+                    previous.Odcinek = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == previous.OdcinekId);
+                }
+
+                if (current.Odcinek is null)
+                {
+                    current.Odcinek = await _context.Odcinki.FirstOrDefaultAsync(o => o.Id == current.OdcinekId);
+                }
+
+                var endOdPrevious = previous.Powrot ? previous.Odcinek.Od : previous.Odcinek.Do;
+                var startOfCurrent = current.Powrot ? current.Odcinek.Do : current.Odcinek.Od;
+
+                if (endOdPrevious != startOfCurrent)
+                {
+                    return (false, $"Odcinki o kolejności: {i} oraz {i + 1} nie są połączone");
+                }
+            }
+            return (true, string.Empty);
+        }
+
+        private async Task RemoveConnectedPotwierdzeniaOdcinkow(int potwierdzenieId)
+        {
+            var potwierdzeniaOdcinkow = await _context.PotwierdzeniaTerenowePrzebytychOdcinkow
+                .Where(p => p.Potwierdzenie == potwierdzenieId).ToListAsync();
+
+            foreach (var potwierdzenieOdcinka in potwierdzeniaOdcinkow)
+            {
+                _context.PotwierdzeniaTerenowePrzebytychOdcinkow.Remove(potwierdzenieOdcinka);
+            }
+        }
+
+        private void PreventCycleReferences(Wycieczka wycieczka)
+        {
+            foreach (var odcinek in wycieczka?.Odcinki ?? Array.Empty<PrzebycieOdcinka>())
+            {
+                odcinek.DotyczacaWycieczka = null;
+            }
+        }
+
+        private IQueryable<Wycieczka> GetBaseWycieczkaIQueryable()
+        {
+            return _context.Wycieczki
+                .Include(w => w.Ksiazeczka)
+                    .ThenInclude(k => k.WlascicielKsiazeczki)
+                        .ThenInclude(u => u.RolaUzytkownika)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PunktTerenowyDo)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PunktTerenowyOd)
+                .Include(w => w.Odcinki)
+                    .ThenInclude(o => o.Odcinek)
+                        .ThenInclude(o => o.PasmoGorskie);
         }
     }
 }
