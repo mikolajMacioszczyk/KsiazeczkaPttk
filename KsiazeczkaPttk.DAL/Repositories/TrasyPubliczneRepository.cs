@@ -55,7 +55,9 @@ namespace KsiazeczkaPttk.DAL.Repositories
                 return Result<IEnumerable<Odcinek>>.Error("Nie znaleziono Pasma Górskiego");
             }
 
-            var odcinki = await GetBaseOdcinekQueryable().Where(p => p.Pasmo == idPasma).ToListAsync();
+            var odcinki = await GetBaseOdcinekQueryable()
+                .Where(o => o.Aktywny)
+                .Where(p => p.Pasmo == idPasma).ToListAsync();
 
             return Result<IEnumerable<Odcinek>>.Ok(odcinki);
         }
@@ -69,6 +71,7 @@ namespace KsiazeczkaPttk.DAL.Repositories
             }
 
             var odcinki = await GetBaseOdcinekQueryable()
+                .Where(o => o.Aktywny)
                 .Where(o => o.Od == idPunktuTerenowego || (o.Do == idPunktuTerenowego && o.PunktyPowrot > 0))
                 .ToListAsync();
 
