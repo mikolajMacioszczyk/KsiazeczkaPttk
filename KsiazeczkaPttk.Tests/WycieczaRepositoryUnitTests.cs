@@ -152,7 +152,8 @@ namespace KsiazeczkaPttk.Tests
         [InlineData(1, 1, false, 2, 1, true, true, "")]
         // ten sam odcinek wraz z powrotem w złej kolejności
         [InlineData(1, 1, true, 2, 1, false, true, "Odcinki o kolejności: 1 oraz 2 nie są połączone")]
-        public async Task CreateWycieczka_DwaOdcinkiOdcinek(int kolejnoscPierwszego, int idPierwszego, bool powrotPierwszego, int kolejnoscDrugiego, int idDrugiego, bool powrotDrugiego, bool isOk, string reason)
+        public async Task CreateWycieczka_DwaOdcinkiOdcinek(int kolejnoscPierwszego, int idPierwszego, bool powrotPierwszego, 
+            int kolejnoscDrugiego, int idDrugiego, bool powrotDrugiego, bool isOk, string reason)
         {
             // arrange
             await KsiazeczkaSeed.Seed(_context);
