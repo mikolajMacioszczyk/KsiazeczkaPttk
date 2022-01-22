@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KsiazeczkaPttk.DAL\KsiazeczkaPttk.DAL.csproj" />
+    <ProjectReference Include="..\KsiazeczkaPttk.Logic\KsiazeczkaPttk.Logic.csproj" />
     <ProjectReference Include="..\KsiazeczkaPttk\KsiazeczkaPttk.API.csproj" />
   </ItemGroup>
 

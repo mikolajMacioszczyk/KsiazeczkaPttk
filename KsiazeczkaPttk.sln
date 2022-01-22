@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KsiazeczkaPttk.Domain", "Ks
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KsiazeczkaPttk.DAL", "KsiazeczkaPttk.DAL\KsiazeczkaPttk.DAL.csproj", "{DABC6D4C-5BE1-413B-B0D5-9D087FE3F702}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KsiazeczkaPttk.Tests", "KsiazeczkaPttk.Tests\KsiazeczkaPttk.Tests.csproj", "{29EB02F1-0DE4-4D1C-AFFB-C04F83BC11B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KsiazeczkaPttk.Tests", "KsiazeczkaPttk.Tests\KsiazeczkaPttk.Tests.csproj", "{29EB02F1-0DE4-4D1C-AFFB-C04F83BC11B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KsiazeczkaPttk.Logic", "KsiazeczkaPttk.Logic\KsiazeczkaPttk.Logic.csproj", "{499D295D-76D6-4D1A-A1D3-450032E508FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{29EB02F1-0DE4-4D1C-AFFB-C04F83BC11B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29EB02F1-0DE4-4D1C-AFFB-C04F83BC11B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29EB02F1-0DE4-4D1C-AFFB-C04F83BC11B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{499D295D-76D6-4D1A-A1D3-450032E508FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{499D295D-76D6-4D1A-A1D3-450032E508FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{499D295D-76D6-4D1A-A1D3-450032E508FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{499D295D-76D6-4D1A-A1D3-450032E508FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
