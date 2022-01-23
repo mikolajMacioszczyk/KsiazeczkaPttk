@@ -1,8 +1,8 @@
-﻿using KsiazeczkaPttk.DAL.Interfaces;
+﻿using System.Linq;
+using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.Domain.Models;
-using System.Linq;
 
-namespace KsiazeczkaPttk.DAL.Services
+namespace KsiazeczkaPttk.Logic.Services
 {
     public class WeryfikacjaService : IWeryfikacjaService
     {

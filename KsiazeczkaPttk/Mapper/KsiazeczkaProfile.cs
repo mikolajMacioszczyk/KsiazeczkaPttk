@@ -10,16 +10,30 @@ namespace KsiazeczkaPttk.API.Mapper
     {
         public KsiazeczkaProfile()
         {
+            CreateOdcinekMapping();
+
+            CreateMap<CreatePunktTerenowyViewModel, PunktTerenowy>();
+
+            CreatePotwierdzenieMapping();
+            
+            CreateWycieczkaMapping();
+        }
+
+        private void CreateOdcinekMapping()
+        {
             CreateMap<CreateOdcinekPublicznyViewModel, Odcinek>()
                 .ForMember(m => m.Wersja, o => o.MapFrom(_ => 1));
 
             CreateMap<EditOdcinekPublicznyViewModel, Odcinek>();
 
-            CreateMap<CreatePunktTerenowyViewModel, PunktTerenowy>();
-
             CreateMap<CreateOdcinekViewModel, Odcinek>()
                 .ForMember(m => m.Wersja, o => o.MapFrom(_ => 1));
 
+            CreateMap<Odcinek, SasiedniOdcinek>();
+        }
+
+        private void CreatePotwierdzenieMapping()
+        {
             CreateMap<CreatePotwierdzenieWithQrViewModel, PotwierdzenieTerenowe>()
                 .ForMember(m => m.Typ, opt => opt.MapFrom(_ => TypPotwierdzenia.KodQr))
                 .ForMember(m => m.Punkt, opt => opt.MapFrom(src => src.PunktId))
@@ -30,6 +44,10 @@ namespace KsiazeczkaPttk.API.Mapper
                 .ForMember(m => m.Punkt, opt => opt.MapFrom(src => src.PunktId))
                 .ForMember(m => m.Administracyjny, opt => opt.MapFrom(_ => false));
 
+        }
+
+        private void CreateWycieczkaMapping()
+        {
             CreateMap<CreateWycieczkaViewModel, Wycieczka>()
                 .ForMember(m => m.Odcinki, opt => opt.ConvertUsing(new PrzebycieOdcinkaViewModelToPrzebycieOdcinkaConverter(), src => src.PrzebyteOdcinki));
 
@@ -39,7 +57,6 @@ namespace KsiazeczkaPttk.API.Mapper
             CreateMap<WycieczkaPreview, WeryfikowanaWycieczkaViewModel>()
                 .ForMember(m => m.Wycieczka, opt => opt.ConvertUsing(new WycieczkaPreviewToWeryfikowanaWycieczkaConverter(), src => src));
 
-            CreateMap<Odcinek, SasiedniOdcinek>();
         }
     }
 }

@@ -1,7 +1,6 @@
 using KsiazeczkaPttk.DAL;
 using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.DAL.Repositories;
-using KsiazeczkaPttk.DAL.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -16,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KsiazeczkaPttk.Logic.Services;
 
 namespace KsiazeczkaPttk
 {

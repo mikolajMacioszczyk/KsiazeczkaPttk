@@ -1,10 +1,10 @@
-﻿using KsiazeczkaPttk.DAL.Interfaces;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using KsiazeczkaPttk.DAL.Interfaces;
+using Microsoft.AspNetCore.Http;
 
-namespace KsiazeczkaPttk.DAL.Services
+namespace KsiazeczkaPttk.Logic.Services
 {
     public class FileService : IFileService
     {

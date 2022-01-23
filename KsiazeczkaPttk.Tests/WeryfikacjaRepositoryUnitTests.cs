@@ -1,11 +1,11 @@
 ﻿using KsiazeczkaPttk.DAL;
 using KsiazeczkaPttk.DAL.Interfaces;
 using KsiazeczkaPttk.DAL.Repositories;
-using KsiazeczkaPttk.DAL.Services;
 using KsiazeczkaPttk.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
+using KsiazeczkaPttk.Logic.Services;
 using Xunit;
 
 namespace KsiazeczkaPttk.Tests
